@@ -1,3 +1,8 @@
+import 'package:edu_link/view/add_student/add_student_screen.dart';
+import 'package:edu_link/view/add_teacher/add_teacher_screen.dart';
+import 'package:edu_link/view/home/tabs/admin_overview.dart';
+import 'package:edu_link/view/home/tabs/teacher_list_screen.dart';
+import 'package:edu_link/view/home/tabs/student_tab.dart';
 import 'package:edu_link/widgets/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,7 +17,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tabs = _getTabs();
-    final views = _getTabViews();
+    final views = _getTabViews(context);
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
@@ -51,41 +56,34 @@ class HomeScreen extends StatelessWidget {
 
     List<Tab> _getTabs(){
     if(role == "admin"){
-      return const [
+      return  [
         Tab(text: "Overview"),
         Tab(text: "Student"),
         Tab(text: "Teacher")
       ];
     }else if(role == "teacher"){
-    return const [
+    return  [
       Tab(text: "Dashboard"),
       Tab(text: "Student")
     ];
     }else{
-      return const [
+      return  [
         Tab(text: "Dashboard")
       ];
     }
   }
 
-    List<Widget> _getTabViews(){
+    List<Widget> _getTabViews(BuildContext context){
     if(role == "admin"){
       return [
         // Admin overview UI
-        Center(
-          child: Text("Admin Overview"),
-        ),
-        Center(
-          child: Column(
-            children: [
-              ListTile(),
-              FloatingActionButton(onPressed: (){},child: Icon(Icons.add))
-            ],
-          ),
-        ),
-        Center(
-          child: Text("Manage Teacher"),
-        ),
+        adminOverview(),
+
+        // Student Tab View(Admin)
+        StudentTab(),
+
+        // Teacher Tab View(Admin)
+        TeacherListScreen()
       ];
     }else if(role == "teacher"){
       return const[
@@ -97,7 +95,7 @@ class HomeScreen extends StatelessWidget {
         ),
       ];
     }else{
-      return const[
+      return [
         Center(
           child: Text("Student Dashboard"),
         ),

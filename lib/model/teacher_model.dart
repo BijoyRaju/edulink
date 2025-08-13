@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class TeacherModel {
   String teacherId;
   String adminId;
@@ -43,8 +45,8 @@ class TeacherModel {
       email: map["email"],
       phone: map["phone"],
       subject: map["subject"],
-      dateOfBirth: map["date_of_birth"],
-      joinDate: map["join_date"],
+      dateOfBirth: (map["date_of_birth"]as Timestamp).toDate(),
+      joinDate: (map["join_date"]as Timestamp).toDate(),
       additionalInfo: map["additional_info"],
     );
   }
