@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   if(mounted){
     if(isLoggedIn && role != null){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BottomNavigationScreen(role: role,)));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BottomNavigationScreen(role: role)));
     }else{
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
     }

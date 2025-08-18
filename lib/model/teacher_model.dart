@@ -39,8 +39,8 @@ class TeacherModel {
 
   factory TeacherModel.fromMap(Map<String, dynamic> map) {
     return TeacherModel(
-      teacherId: map["teacher_id"],
-      adminId: map["admin_id"],
+      teacherId: map["teacher_id"] ?? map["teacherId"],
+      adminId: map["admin_id"] ?? map["adminId"],
       name: map["name"],
       email: map["email"],
       phone: map["phone"],

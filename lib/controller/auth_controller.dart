@@ -43,18 +43,7 @@ class AuthController {
     }
   }
 
-  void dispose() {
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    phoneController.dispose();
-    schoolController.dispose();
-    rePasswordController.dispose();
-    subjectController.dispose();
-    additinalInfoController.dispose();
-    dobController.dispose();
-    joinDateController.dispose();
-  }
+
 
   // Login
   Future<void> loginUser(BuildContext context) async {
@@ -75,7 +64,7 @@ class AuthController {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => BottomNavigationScreen(role: userRole),
+            builder: (context) => BottomNavigationScreen(role: userRole,),
           ),
         );
       } else {
@@ -116,6 +105,7 @@ class AuthController {
     }
   }
 
+
   // LogOut User
   Future<void> logOutUser(BuildContext context) async {
     try {
@@ -132,4 +122,17 @@ class AuthController {
       }
     }
   }
+
+    void dispose() {
+      nameController.dispose();
+      emailController.dispose();
+      passwordController.dispose();
+      phoneController.dispose();
+      schoolController.dispose();
+      rePasswordController.dispose();
+      subjectController.dispose();
+      additinalInfoController.dispose();
+      dobController.dispose();
+      joinDateController.dispose();
+    }
 }

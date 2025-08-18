@@ -1,4 +1,5 @@
-import 'package:edu_link/view/add_teacher/add_teacher_screen.dart';
+import 'package:edu_link/view/teacher/add_teacher_screen.dart';
+import 'package:edu_link/view/teacher/teacher_view_screen.dart';
 import 'package:edu_link/widgets/home/home_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,10 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
   @override
   void initState() {
     Future.microtask((){
-      Provider.of<TeacherController>(context,listen: false).fetchTeachers();
+      if(mounted){
+      final teacherController =  Provider.of<TeacherController>(context,listen: false);
+      teacherController.fetchTeachers();
+      }
     });
     super.initState();
   }
@@ -45,13 +49,15 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
               child: Text("No teachers found"),
             );
           }
-      
           return ListView.builder(
-            itemCount: teacherController.teacher.length,
-            itemBuilder: (context, index) {
-              final teacher = teacherController.teacher[index];
-              return customTile(teacher.name, teacher.phone, teacher.subject);
-            },
+              itemCount: teacherController.teacher.length,
+              itemBuilder: (context, index) {
+                final teacher = teacherController.teacher[index];
+                return customTile(teacher.name, teacher.phone, teacher.subject,
+                (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => TeacherViewScreen(teacher: teacher)));
+                });
+              },
           );
         },
       ),

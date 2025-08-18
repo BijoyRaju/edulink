@@ -1,8 +1,16 @@
+import 'package:edu_link/controller/student_controller.dart';
+import 'package:edu_link/controller/teacher_controller.dart';
 import 'package:edu_link/widgets/home/home_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
-Widget adminOverview(){
+Widget adminOverview(BuildContext context){
+  final teacherController = Provider.of<TeacherController>(context);
+  final studentController = Provider.of<StudentController>(context);
+  final totalTeacher = teacherController.teacher.length;
+  final totalStudents = studentController.students.length;
+  
   return Center(
     child: Padding(
       padding: const EdgeInsets.all(20.0),
@@ -14,10 +22,10 @@ Widget adminOverview(){
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  homeScreenContainerOne(250.sp, 150.sp, Color(0xFFA7D0B9), "STUDENTS", "150"),
+                  homeScreenContainerOne(250.sp, 150.sp, Color(0xFFA7D0B9), "STUDENTS", "$totalStudents"),
                   Column(
                     children: [
-                      homeScreenContainerTwo(115.sp, 150.sp, Color(0xFF043427), "TEACHERS", "20"),
+                      homeScreenContainerTwo(115.sp, 150.sp, Color(0xFF043427), "TEACHERS", "$totalTeacher"),
                       SizedBox(height: 10.h),
                       homeScreenContainerTwo(115.sp, 150.sp, Color(0xFF29725E), "REVENUE", "15000"),
                     ],

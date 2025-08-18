@@ -5,6 +5,20 @@ class TeacherScrevice {
   final CollectionReference teacherCollection = FirebaseFirestore.instance.collection('teachers');
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Current Teacher
+  Future<TeacherModel?>getTeacherById(String teacherId)async{
+    try{
+      DocumentSnapshot doc = await _firestore.collection('teachers').doc(teacherId).get();
+      if(doc.exists){
+        final data = doc.data() as Map<String,dynamic>;
+        return TeacherModel.fromMap(data);
+      }
+      return null;
+    }catch(e){
+      throw Exception("Failed to fetch teacher: $e");
+    }
+  }
+
   Future<List<TeacherModel>> getTeacherByAdmin(String adminId)async{
     try{
       QuerySnapshot snapshot = await _firestore.collection('teachers').where('admin_id',isEqualTo: adminId).get();

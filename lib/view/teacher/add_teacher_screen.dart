@@ -19,7 +19,7 @@ class _AddStudentScreenState extends State<AddTeacherScreen> {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(1990),
+      firstDate: DateTime(1980),
       lastDate: DateTime(2100),
     );
 

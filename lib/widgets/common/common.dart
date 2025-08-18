@@ -107,6 +107,7 @@ Widget customTextField({required TextEditingController controller,required Strin
       maxLines: maxline,
         controller: controller,
         decoration: InputDecoration(
+          alignLabelWithHint: true,
           labelText: label,
           labelStyle: TextStyle(color: Colors.black),
           border: OutlineInputBorder(),
