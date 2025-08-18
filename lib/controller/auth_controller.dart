@@ -59,14 +59,11 @@ class AuthController {
         await prefs.setString("userId", userId);
         await prefs.setString("userRole",userRole);
         await prefs.setBool("isLoggedIn", true);
-        
+        if(context.mounted){
         showSnackBarMessage(context, "Login Successful");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BottomNavigationScreen(role: userRole,),
-          ),
+        Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => BottomNavigationScreen(role: userRole,),),
         );
+        }
       } else {
         showSnackBarMessage(context, result["message"]);
       }
@@ -113,8 +110,10 @@ class AuthController {
       if (context.mounted) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.clear();
+        if(context.mounted){
         showSnackBarMessage(context, "Logged Out Successfully.");
         Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      }
       }
     } catch (e) {
       if (context.mounted) {
