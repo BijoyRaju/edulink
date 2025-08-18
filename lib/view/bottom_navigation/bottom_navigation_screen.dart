@@ -17,7 +17,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
   late List<Widget> pages =  [
     HomeScreen(role: widget.role),
-    AnnouncementScreen(),
+    AnnouncementScreen(role: widget.role,),
     ChatScreen(),
     ProfileScreen()
   ];

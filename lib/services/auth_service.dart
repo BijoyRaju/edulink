@@ -108,7 +108,7 @@ class AuthService {
 
       // Save in student Collection
       StudentModel studentModel = StudentModel(studentId: uid, adminId: adminId, teacherId: teacherId, name: name,stdClass: stdClass, email: email, parentName: parentName, phone: phone, profileImage: profileImage, rollNo: rollNo, dateOfBirth: dateOfBirth, admissionDate: admissionDate);
-      await _db.collection('teachers').doc(uid).set(studentModel.toMap());
+      await _db.collection('students').doc(uid).set(studentModel.toMap());
       
       return "success";
     }on FirebaseAuthException catch(e){
@@ -131,12 +131,25 @@ class AuthService {
       if(!userDoc.exists){
         return {"Status" :"error" , "message" : "User data not Found"};
       }
-      String role = userDoc['role'];
-      return {"status" : "success", "role" : role};
+      String? role = userDoc['role'] as String?;
+      if(role == null){
+         return {"status": "error", "message": "Role not found for this user"};
+      }
+      return {"status" : "success", "role" : role,"userId": uid,};
     }on FirebaseException catch(e){
       return {"status" : "error", "message" : e.message ?? "Login Failed"};
     }catch(e){
       return {"status" : "error", "message" :e.toString()};
+    }
+   }
+
+
+   // Logout
+   Future<void> logOutUser()async{
+    try{
+      await _auth.signOut();
+    }catch(e){
+      throw Exception("Logout failed: $e");
     }
    }
 

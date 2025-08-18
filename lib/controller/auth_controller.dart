@@ -1,5 +1,6 @@
 import 'package:edu_link/services/auth_service.dart';
 import 'package:edu_link/view/bottom_navigation/bottom_navigation_screen.dart';
+import 'package:edu_link/view/login/login_screen.dart';
 import 'package:edu_link/widgets/common/common.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,105 +18,121 @@ class AuthController {
 
   final subjectController = TextEditingController();
   final additinalInfoController = TextEditingController();
+  final dobController = TextEditingController();
+  final joinDateController = TextEditingController();
+
   DateTime? dateOfBirth;
   DateTime? joinDate;
-  
 
   // Register Admin
-  Future<void> registerAdmin(BuildContext context)async{
+  Future<void> registerAdmin(BuildContext context) async {
     String result = await _authService.registerAdmin(
       name: nameController.text.trim(),
       email: emailController.text.trim(),
       password: passwordController.text.trim(),
       role: 'admin',
       phoneNo: phoneController.text.trim(),
-      schoolName: schoolController.text.trim()
+      schoolName: schoolController.text.trim(),
     );
-    if(context.mounted){
-      if(result == "success"){
-        showSnackBarMessage(context,"Admin Registerd Successfully");
-      }else{
-        showSnackBarMessage(context,result);
+    if (context.mounted) {
+      if (result == "success") {
+        showSnackBarMessage(context, "Admin Registered Successfully");
+      } else {
+        showSnackBarMessage(context, result);
       }
     }
   }
-    void dispose() {
-      nameController.dispose();
-      emailController.dispose();
-      passwordController.dispose();
-      phoneController.dispose();
-      schoolController.dispose();
-    }
+
+
 
   // Login
-  Future<void> loginUser(BuildContext context)async{
+  Future<void> loginUser(BuildContext context) async {
     var result = await _authService.loginUser(
       email: emailController.text.trim(),
-      password: passwordController.text.trim()
+      password: passwordController.text.trim(),
     );
-    if(context.mounted){
-      if(result["status"] == "success"){
+    if (context.mounted) {
+      if (result["status"] == "success") {
         String userRole = result["role"];
-        showSnackBarMessage(context, "Login Successfull");
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BottomNavigationScreen(role: userRole)));
-      }else{
+        String userId = result["userId"];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString("userId", userId);
+        await prefs.setString("userRole",userRole);
+        await prefs.setBool("isLoggedIn", true);
+        
+        showSnackBarMessage(context, "Login Successful");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BottomNavigationScreen(role: userRole,),
+          ),
+        );
+      } else {
         showSnackBarMessage(context, result["message"]);
       }
     }
   }
 
   // Register Teacher
-
-  Future<void> registerTeacher(BuildContext context)async{
+  Future<void> registerTeacher(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? adminId = prefs.getString("userId");
-      if(adminId == null){
+    if (context.mounted) {
+      if (adminId == null) {
         showSnackBarMessage(context, "Admin not logged in");
         return;
       }
 
-    final result = await _authService.registerTeacher(
-      adminId: adminId,
-      name: nameController.text.trim(),
-      password: passwordController.text.trim(),
-      email: emailController.text.trim(),
-      phone: phoneController.text.trim(),
-      subject: subjectController.text.trim(),
-      dateOfBirth: dateOfBirth!,
-      joinDate: joinDate!,
-      additionalInfo: additinalInfoController.text.trim(),
-      role: 'teacher'
-    );
-    if(context.mounted){
-      if(result == "success"){
-        showSnackBarMessage(context, "Teacher registartion success");
-      }else{
-        showSnackBarMessage(context, result);
+      final result = await _authService.registerTeacher(
+        adminId: adminId,
+        name: nameController.text.trim(),
+        password: passwordController.text.trim(),
+        email: emailController.text.trim(),
+        phone: phoneController.text.trim(),
+        subject: subjectController.text.trim(),
+        dateOfBirth: dateOfBirth!,
+        joinDate: joinDate!,
+        additionalInfo: additinalInfoController.text.trim(),
+        role: 'teacher',
+      );
+      if (context.mounted) {
+        if (result == "success") {
+          showSnackBarMessage(context, "Teacher registration success");
+        } else {
+          showSnackBarMessage(context, result);
+        }
       }
     }
-
-  // Future<void> registerStudent(String email,String name,String password)async{
-  //   await _authService.registerUser(
-  //     name: name,
-  //     email: email,
-  //     password: password,
-  //     role: 'student'
-  //   );
-  // }
-}
+  }
 
 
-   // LogOut User
-   Future<void> logOutUser(BuildContext context)async{
-    try{
+  // LogOut User
+  Future<void> logOutUser(BuildContext context) async {
+    try {
       await FirebaseAuth.instance.signOut();
-      if(context.mounted){
-      showSnackBarMessage(context, "Logged Out Successfully.");
-    }
-    }catch(e){
-      if(context.mounted){
-        showSnackBarMessage(context, "Logout failed : $e");
+      if (context.mounted) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+        showSnackBarMessage(context, "Logged Out Successfully.");
+        Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showSnackBarMessage(context, "Logout failed: $e");
       }
     }
-   }
+  }
+
+    void dispose() {
+      nameController.dispose();
+      emailController.dispose();
+      passwordController.dispose();
+      phoneController.dispose();
+      schoolController.dispose();
+      rePasswordController.dispose();
+      subjectController.dispose();
+      additinalInfoController.dispose();
+      dobController.dispose();
+      joinDateController.dispose();
+    }
 }

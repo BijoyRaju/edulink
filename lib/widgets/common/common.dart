@@ -98,3 +98,31 @@ void showSnackBarMessage(BuildContext context, String message, ) {
     ),
   );
 }
+
+Widget customTextField({required TextEditingController controller,required String label,int maxline = 1,bool obscureText = false}){
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: TextField(
+      obscureText: obscureText,
+      maxLines: maxline,
+        controller: controller,
+        decoration: InputDecoration(
+          alignLabelWithHint: true,
+          labelText: label,
+          labelStyle: TextStyle(color: Colors.black),
+          border: OutlineInputBorder(),
+          disabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.grey
+            )
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.black,
+              width: 2.0
+            )
+          ),
+        )
+      ),
+  );
+}

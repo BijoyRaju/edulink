@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class StudentModel {
   String studentId;
   String adminId;
@@ -56,8 +58,8 @@ class StudentModel {
       phone: map["phone"],
       profileImage: map["profile_image"],
       rollNo: map["roll_no"],
-      dateOfBirth: map["date_of_birth"],
-      admissionDate: map["admission_date"],
+      dateOfBirth: (map["date_of_birth"]as Timestamp).toDate(),
+      admissionDate: (map["admission_date"]as Timestamp).toDate(),
     );
   }
 }

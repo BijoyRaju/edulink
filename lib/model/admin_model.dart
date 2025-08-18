@@ -25,7 +25,7 @@ class AdminModel {
 
   factory AdminModel.fromMap(Map<String, dynamic> map) {
     return AdminModel(
-      adminId: map["admin_id"],
+      adminId: map["admin_id"] ?? map["adminId"],
       name: map["name"],
       email: map["email"],
       phoneNo: map["phone"],
