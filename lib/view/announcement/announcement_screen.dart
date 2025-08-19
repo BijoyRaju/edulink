@@ -11,6 +11,7 @@ class AnnouncementScreen extends StatefulWidget {
   final String role;
   const AnnouncementScreen({super.key, required this.role});
 
+
   @override
   State<AnnouncementScreen> createState() => _AnnouncementScreenState();
 }
@@ -26,11 +27,13 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
       }
     });
   }
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<AnnouncementController>(context);
     return Scaffold(
+      key: _scaffoldKey,
       drawer: customDrawer(context, widget.role),
       floatingActionButton: widget.role == "admin"
           ? FloatingActionButton(
@@ -58,6 +61,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                     children: [
                       IconButton(
                         onPressed: () {
+                          Scaffold.of(context).openDrawer();
                         },
                         icon: Icon(Icons.menu_sharp,
                             size: 40.sp, color: Colors.white),

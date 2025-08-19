@@ -135,7 +135,16 @@ class AuthService {
       if(role == null){
          return {"status": "error", "message": "Role not found for this user"};
       }
-      return {"status" : "success", "role" : role,"userId": uid,};
+      // String? adminId;
+      // if(role != "admin"){
+      //   adminId = userDoc["admin_id"];
+      // }
+      return {
+        "status" : "success",
+        "role" : role,
+        "userId": uid,
+        // "adminId" : adminId
+      };
     }on FirebaseException catch(e){
       return {"status" : "error", "message" : e.message ?? "Login Failed"};
     }catch(e){

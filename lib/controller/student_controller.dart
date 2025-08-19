@@ -41,7 +41,7 @@ class StudentController extends ChangeNotifier {
 // Register Student
   Future<void> registerStudent(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? role = prefs.getString('userRole');
+    String? role = prefs.getString('role');
     String? currentUserId = prefs.getString('userId');
 
     if (currentUserId == null || role == null) {
