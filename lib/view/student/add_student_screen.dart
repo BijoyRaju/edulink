@@ -158,16 +158,70 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
             SizedBox(height: 20.h),
             customButton(text: "Add ", onPressed: ()async{
+            if(validateStudentForm(context, controller)){
               await controller.registerStudent(context);
-              if(context.mounted){
-              Navigator.pop(context);
-              }}
+              if(context.mounted) Navigator.pop(context);
+              }
+            }
               ),
             ],
           ),
         );
       },
     ),
+  );
+}
+ // Validation
+ bool validateStudentForm(BuildContext context, StudentController controller) {
+  if (controller.nameController.text.isEmpty) {
+    showError(context, "Name is required");
+    return false;
+  }
+  if (controller.emailController.text.isEmpty ||
+      !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(controller.emailController.text)) {
+    showError(context, "Enter a valid email");
+    return false;
+  }
+  if (controller.parentNameController.text.isEmpty) {
+    showError(context, "Parent Name is required");
+    return false;
+  }
+  if (controller.phoneNumberController.text.isEmpty ||
+      !RegExp(r'^[0-9]{10}$').hasMatch(controller.phoneNumberController.text)) {
+    showError(context, "Enter a valid 10-digit phone number");
+    return false;
+  }
+  if (controller.classController.text.isEmpty) {
+    showError(context, "Class is required");
+    return false;
+  }
+  if (controller.rollNoController.text.isEmpty) {
+    showError(context, "Roll No is required");
+    return false;
+  }
+  if (controller.dobController.text.isEmpty) {
+    showError(context, "Select Date of Birth");
+    return false;
+  }
+  if (controller.admissionDateController.text.isEmpty) {
+    showError(context, "Select Admission Date");
+    return false;
+  }
+  if (controller.passwordController.text.isEmpty ||
+      controller.passwordController.text.length < 6) {
+    showError(context, "Password must be at least 6 characters");
+    return false;
+  }
+  if (controller.passwordController.text != controller.reEnterPassword.text) {
+    showError(context, "Passwords do not match");
+    return false;
+  }
+  return true; 
+}
+
+void showError(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(message), backgroundColor: Colors.black),
   );
 }
 }

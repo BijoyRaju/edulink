@@ -22,17 +22,10 @@ class AnnouncementController extends ChangeNotifier{
     final userId = prefs.getString("userId");
     final role = prefs.getString("role"); 
 
-    if (userId == null) {
+    if (userId == null ||  role == null) {
       throw Exception("User not found");
     }
-
-    if (role == "admin") {
-      announcements = await _service.getAnnouncements(userId); 
-    } else {
-      final adminId = prefs.getString("adminId");
-      if (adminId == null) throw Exception("AdminId not found");
-      announcements = await _service.getAnnouncements(adminId);
-    }
+    announcements = await _service.getAnnouncements(userId, role);
   } catch (e) {
     errorMessage = e.toString();
   }
@@ -43,6 +36,9 @@ class AnnouncementController extends ChangeNotifier{
 
   // Create Announcement
   Future<void> addAnnouncements()async{
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
     try{
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final adminId = prefs.getString("userId");
@@ -61,7 +57,6 @@ class AnnouncementController extends ChangeNotifier{
       clearController();
     }catch(e){
       errorMessage = e.toString();
-      notifyListeners();
     }finally{
       isLoading = false;
       notifyListeners();
@@ -111,8 +106,8 @@ class AnnouncementController extends ChangeNotifier{
   }
 
   void clearController(){
-    titleController.dispose();
-    descriptionController.dispose();
+    titleController.clear();
+    descriptionController.clear();
   }
 
   @override

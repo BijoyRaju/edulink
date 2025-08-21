@@ -1,4 +1,5 @@
 import 'package:edu_link/controller/announcement_controller.dart';
+import 'package:edu_link/controller/attendance_controller.dart';
 import 'package:edu_link/controller/student_controller.dart';
 import 'package:edu_link/controller/teacher_controller.dart';
 import 'package:edu_link/firebase_options.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => TeacherController()..fetchTeachers()),
           ChangeNotifierProvider(create: (_) => StudentController()..fetchStudents()),
           ChangeNotifierProvider(create: (_) => AnnouncementController()),
+          ChangeNotifierProvider(create: (_) => AttendanceController()),
         ],
         child: MaterialApp(
             debugShowCheckedModeBanner: false,

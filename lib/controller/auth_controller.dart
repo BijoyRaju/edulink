@@ -37,6 +37,7 @@ class AuthController {
     if (context.mounted) {
       if (result == "success") {
         showSnackBarMessage(context, "Admin Registered Successfully");
+        Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
       } else {
         showSnackBarMessage(context, result);
       }
@@ -55,18 +56,21 @@ class AuthController {
       if (result["status"] == "success") {
         String userRole = result["role"];
         String userId = result["userId"];
+        String? adminId = result["adminId"];
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString("userId", userId);
-        await prefs.setString("userRole",userRole);
+        await prefs.setString("role",userRole);
         await prefs.setBool("isLoggedIn", true);
-        
+
+        if (userRole != "admin" && adminId != null) {
+        // Save adminId for teacher/student
+        await prefs.setString("adminId", adminId);
+      }
+        if(context.mounted){
         showSnackBarMessage(context, "Login Successful");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BottomNavigationScreen(role: userRole,),
-          ),
+        Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => BottomNavigationScreen(role: userRole,),),
         );
+        }
       } else {
         showSnackBarMessage(context, result["message"]);
       }
@@ -113,8 +117,10 @@ class AuthController {
       if (context.mounted) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.clear();
+        if(context.mounted){
         showSnackBarMessage(context, "Logged Out Successfully.");
         Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      }
       }
     } catch (e) {
       if (context.mounted) {

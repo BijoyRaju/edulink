@@ -79,13 +79,62 @@ class _AddStudentScreenState extends State<AddTeacherScreen> {
             customTextField(controller: controller.rePasswordController, label: "Re-Enter Password",obscureText: true),
             SizedBox(height: 20.h),
             customButton(text: "Add ", onPressed: ()async{
+              if(validateTeacherForm(context, controller)){
               await controller.registerTeacher(context);
-              Navigator.pop(context);
+              if(context.mounted) Navigator.pop(context);
+              }
             })
           ],
         ),
       ),
     );
   }
+
+  // Validate
+  bool validateTeacherForm(BuildContext context, AuthController controller) {
+  if (controller.nameController.text.isEmpty) {
+    showError(context, "Name is required");
+    return false;
+  }
+  if (controller.emailController.text.isEmpty ||
+      !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(controller.emailController.text)) {
+    showError(context, "Enter a valid email");
+    return false;
+  }
+  if (controller.phoneController.text.isEmpty ||
+      !RegExp(r'^[0-9]{10}$').hasMatch(controller.phoneController.text)) {
+    showError(context, "Enter a valid 10-digit phone number");
+    return false;
+  }
+  if (controller.subjectController.text.isEmpty) {
+    showError(context, "Subject is required");
+    return false;
+  }
+  if (controller.dobController.text.isEmpty) {
+    showError(context, "Select Date of Birth");
+    return false;
+  }
+  if (controller.joinDateController.text.isEmpty) {
+    showError(context, "Select Join Date");
+    return false;
+  }
+  if (controller.passwordController.text.isEmpty ||
+      controller.passwordController.text.length < 6) {
+    showError(context, "Password must be at least 6 characters");
+    return false;
+  }
+  if (controller.passwordController.text != controller.rePasswordController.text) {
+    showError(context, "Passwords do not match");
+    return false;
+  }
+
+  return true;
+}
+
+void showError(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(message), backgroundColor: Colors.black),
+  );
+}
 }
 

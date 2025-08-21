@@ -41,7 +41,7 @@ class _AddAnnouncementState extends State<AddAnnouncement> {
             SizedBox(height: 20.h),
             customButton(text: "Announce", onPressed: ()async{
               await controller.addAnnouncements();
-              Navigator.pop(context);
+              if(context.mounted) Navigator.pop(context);
             })
 
           ],
