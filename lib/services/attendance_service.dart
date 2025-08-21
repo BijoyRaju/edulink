@@ -5,7 +5,7 @@ class AttendanceService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   // Add attendance
-  Future<void> addAttendace(AttendanceModel attendance)async{
+  Future<void> addAttendance(AttendanceModel attendance)async{
     try{
     await _db.collection("attendance").doc(attendance.attendanceId).set(attendance.toMap());
     }catch(e){
@@ -18,10 +18,10 @@ class AttendanceService {
     try{
     final snapshot = await _db.collection("attendance")
                       .where("student_id",isEqualTo: studentId)
-                      .where("date",isEqualTo: date)
+                      .where("date",isEqualTo: Timestamp.fromDate(DateTime(date.year, date.month, date.day)))
                       .limit(1)
                       .get();
-    if(snapshot.docs.isEmpty){
+    if(snapshot.docs.isNotEmpty){
       return AttendanceModel.fromMap(snapshot.docs.first.data());
     }
     return null;
@@ -35,7 +35,7 @@ class AttendanceService {
     try{
     final snapshot = await _db
         .collection('attendance')
-        .where('date', isEqualTo: Timestamp.fromDate(date))
+        .where('date', isEqualTo:  Timestamp.fromDate(DateTime(date.year, date.month, date.day)))
         .get();
 
     return snapshot.docs
@@ -49,7 +49,7 @@ class AttendanceService {
   // Update Attendance
   Future<void> updateAttendance(String attendanceId,Map<String,dynamic>data)async{
     try{
-    await _db.collection("attendance").doc("attendanceId").update(data);
+    await _db.collection("attendance").doc(attendanceId).update(data);
     }catch(e){
       throw Exception("Failed to update attendance: $e");
     }

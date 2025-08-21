@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkLoginUser()async{
     final prefs = await SharedPreferences.getInstance();
-    final role = prefs.getString('userRole');
+    final role = prefs.getString('role');
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
     await Future.delayed(Duration(seconds: 2));

@@ -1,5 +1,6 @@
 // drawer.dart
 import 'package:edu_link/controller/auth_controller.dart';
+import 'package:edu_link/view/attendance/attendance.dart';
 import 'package:edu_link/view/attendance/attendance_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,7 @@ Widget customDrawer(BuildContext context,String role) {
           leading: const Icon(Icons.edit_calendar_sharp),
           title: const Text('Attendance'),
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => AttendanceScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Attendance()));
           },
         ),
         Divider(),

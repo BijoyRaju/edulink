@@ -21,7 +21,7 @@ class AttendanceModel {
     return {
       'attendance_id' : attendanceId,
       'student_id' : studentId,
-      'date' : date,
+      'date' : Timestamp.fromDate(date),
       'status' : status,
       'marked_by' : markedBy,
       'method' : method

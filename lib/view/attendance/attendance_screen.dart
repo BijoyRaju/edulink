@@ -11,6 +11,7 @@ class AttendanceScreen extends StatefulWidget {
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
   DateTime selectedDate = DateTime.now();
+
   List<String> statuses = ["Not Set", "Holiday", "Present", "Absent"];
 
   // Example student list
@@ -27,32 +28,41 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Take Attendance"),
-        backgroundColor: Color(0xFF254F43), 
+        backgroundColor: Color(0xFF254F43),
         foregroundColor: Colors.white,
       ),
       body: Column(
         children: [
           SizedBox(height: 8.h),
+
           // Date Row
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(onPressed: _previousDay, icon: const Icon(Icons.arrow_back_ios)),
+              IconButton(
+                onPressed: _previousDay,
+                icon: const Icon(Icons.arrow_back_ios),
+              ),
               GestureDetector(
                 onTap: _pickDate,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.teal.shade100,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     formattedDate,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              IconButton(onPressed: _nextDay, icon: const Icon(Icons.arrow_forward_ios)),
+              IconButton(
+                onPressed: _nextDay,
+                icon: const Icon(Icons.arrow_forward_ios),
+              ),
             ],
           ),
 
@@ -67,6 +77,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 return ChoiceChip(
                   label: Text(status),
                   selected: false,
+                  selectedColor: _getStatusColor(status),
                   onSelected: (_) {
                     setState(() {
                       for (var s in students) {
@@ -80,6 +91,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           ),
 
           const Divider(),
+
           // Student List
           Expanded(
             child: ListView.builder(
@@ -87,14 +99,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               itemBuilder: (context, index) {
                 var student = students[index];
                 return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("${student['roll']}. ${student['name']}",
-                            style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          "${student['roll']}. ${student['name']}",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold),
+                        ),
                         Text("Class: ${student['class']}"),
                         SizedBox(height: 8.h),
                         Wrap(
@@ -103,7 +119,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                             return ChoiceChip(
                               label: Text(status),
                               selected: student["status"] == status,
-                              selectedColor: Colors.teal,
+                              selectedColor: _getStatusColor(status),
+                              labelStyle: TextStyle(
+                                color: student["status"] == status
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                               onSelected: (_) {
                                 setState(() {
                                   student["status"] = status;
@@ -123,6 +145,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       ),
     );
   }
+
   // 🎨 Status → Color mapping
   Color _getStatusColor(String status) {
     switch (status) {
@@ -144,6 +167,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
+
     if (picked != null) {
       setState(() {
         selectedDate = picked;
