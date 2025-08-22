@@ -22,10 +22,12 @@ class _AttendanceState extends State<Attendance> {
   @override
   void initState() {
     Future.microtask((){
+      if(mounted){
       final attendanceController = context.read<AttendanceController>();
       attendanceController.fetchAttendanceByDate(selectedDate);
       final stuudentController = context.read<StudentController>();
       stuudentController.fetchStudentByTeacher();
+      }
     });
     super.initState();
   }
@@ -34,6 +36,12 @@ class _AttendanceState extends State<Attendance> {
   Widget build(BuildContext context) {
     final attendanceController = context.watch<AttendanceController>();
     final studentController = context.watch<StudentController>();
+    if(studentController.students.isEmpty && !studentController.isLoading){
+      studentController.fetchStudentByTeacher();
+    }
+    if(attendanceController.attendanceList.isEmpty && !attendanceController.isLoading){
+      attendanceController.fetchAttendanceByDate(selectedDate);
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text("Take Attendance"),
@@ -224,6 +232,7 @@ class _AttendanceState extends State<Attendance> {
       setState(() {
         selectedDate = picked;
       });
+      if(mounted) context.read<AttendanceController>().fetchAttendanceByDate(selectedDate);
     }
   }
 
@@ -231,11 +240,13 @@ class _AttendanceState extends State<Attendance> {
     setState(() {
       selectedDate = selectedDate.subtract(const Duration(days: 1));
     });
+    context.read<AttendanceController>().fetchAttendanceByDate(selectedDate);
   }
 
   void _nextDay() {
     setState(() {
       selectedDate = selectedDate.add(const Duration(days: 1));
     });
+    context.read<AttendanceController>().fetchAttendanceByDate(selectedDate);
   }
 }

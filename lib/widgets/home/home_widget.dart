@@ -155,7 +155,7 @@ Widget customTileStudent(String title, String subtitle,String trailing, VoidCall
 
 Widget customTileTeacher(String name,String subject,double width){
   return Container(
-    width: width.w,
+    width: double.infinity,
     padding: EdgeInsets.all(16.w),
     decoration: BoxDecoration(
       color: const Color(0xFF254F43),
