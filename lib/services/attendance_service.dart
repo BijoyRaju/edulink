@@ -60,10 +60,24 @@ class AttendanceService {
     try{
       await _db.collection("attendance").doc(attendandeId).delete();
     }catch(e){
-
+      throw Exception("Failed to delete: $e");
     }
   }
 
-
+    // Get Attendance 
+  Future<List<AttendanceModel>>getAttendanceforMonth(String studentId,int year,int month)async{
+    try{
+      DateTime start = DateTime(year,month,1);
+      DateTime end = DateTime(year,month + 1,0);
+      final snapshot = await _db.collection("attendance")
+        .where("student_id",isEqualTo: studentId)
+        .where("date",isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+        .where("date",isLessThanOrEqualTo: Timestamp.fromDate(end))
+        .get();
+      return snapshot.docs.map((doc) => AttendanceModel.fromMap(doc.data())).toList();
+    }catch(e){
+      throw Exception("Failed to fetch attendance: $e");
+    }
+  }
 
 }

@@ -1,10 +1,11 @@
-// drawer.dart
 import 'package:edu_link/controller/auth_controller.dart';
 import 'package:edu_link/view/attendance/attendance.dart';
-import 'package:edu_link/view/attendance/attendance_screen.dart';
+import 'package:edu_link/view/fee_payment/admin/fee_payment_admin_screen.dart';
+import 'package:edu_link/view/fee_payment/fee_payment_student_screen.dart';
+import 'package:edu_link/view/fee_payment/fee_payment_teacher_screen.dart';
 import 'package:flutter/material.dart';
 
-Widget customDrawer(BuildContext context,String role) {
+Widget customDrawer(BuildContext context,String role,String studentId) {
   final AuthController controller = AuthController();
   return Drawer(
     child: ListView(
@@ -25,6 +26,36 @@ Widget customDrawer(BuildContext context,String role) {
           title: const Text('Attendance'),
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => Attendance()));
+          },
+        ),
+        Divider(),
+        ],
+         if (role == "student") ...[
+        ListTile(
+          leading: const Icon(Icons.payment_sharp),
+          title: const Text('Fees Payment'),
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => FeePaymentStudentScreen(studentId: studentId,)));
+          },
+        ),
+        Divider(),
+        ],
+        if (role == "teacher") ...[
+        ListTile(
+          leading: const Icon(Icons.payment_sharp),
+          title: const Text('Fees Payment'),
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => FeePaymentTeacherScreen()));
+          },
+        ),
+        Divider(),
+        ],
+        if (role == "admin") ...[
+        ListTile(
+          leading: const Icon(Icons.payment_sharp),
+          title: const Text('Fees Payment'),
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => FeePaymentAdminScreen()));
           },
         ),
         Divider(),

@@ -3,6 +3,7 @@ import 'package:edu_link/widgets/announcement/announcement_widgets.dart';
 import 'package:edu_link/widgets/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class AddAnnouncement extends StatefulWidget {
   const AddAnnouncement({super.key});
@@ -13,13 +14,13 @@ class AddAnnouncement extends StatefulWidget {
 
 class _AddAnnouncementState extends State<AddAnnouncement> {
 
-  final AnnouncementController controller = AnnouncementController();
 
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<AnnouncementController>(context,listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add Announcement"),

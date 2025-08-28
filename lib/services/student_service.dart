@@ -8,7 +8,7 @@ class StudentService {
   // Fetch current student
   Future<StudentModel?> getCurrentStudent(String studentId)async{
     try{
-      DocumentSnapshot doc = await _firestore.collection('student').doc(studentId).get();
+      DocumentSnapshot doc = await _firestore.collection('students').doc(studentId).get();
       if(doc.exists){
         final data = doc.data() as Map<String,dynamic>;
         return StudentModel.fromMap(data);

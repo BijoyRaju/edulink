@@ -3,12 +3,14 @@ class UserModel {
   String name;
   String email;
   String role;
+  String? fcmToken;
 
   UserModel({
     required this.uid,
     required this.name,
     required this.email,
     required this.role,
+    this.fcmToken
   });
 
   Map<String, dynamic> toMap() {
@@ -17,6 +19,7 @@ class UserModel {
       'name': name,
       'email': email,
       'role': role,
+      'fcm_token': fcmToken
     };
   }
 
@@ -26,6 +29,7 @@ class UserModel {
       name: map['name'],
       email: map['email'],
       role: map['role'],
+      fcmToken: map['fcm_token']
     );
   }
 }

@@ -12,11 +12,13 @@ Widget customTextFormField({
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: TextFormField(
+      style: TextStyle(color: Colors.white),
       controller: controller,
       validator: validator,
       obscureText: obscureText,
       decoration: InputDecoration(
         filled: true,
+        labelStyle: TextStyle(color: Colors.white),
         fillColor: Color(0xFF73B18F),
         hintText: text,
         hintStyle: TextStyle(color: Color(0xFFEAF9F1),fontSize: 14.sp,fontWeight: FontWeight.bold),
@@ -124,5 +126,27 @@ Widget customTextField({required TextEditingController controller,required Strin
           ),
         )
       ),
+  );
+}
+Widget customIconButton({
+  required String label,
+  required IconData icon,
+  required VoidCallback onPressed,
+  Color color = Colors.orange, 
+}) {
+  return ElevatedButton.icon(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: color,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+    ),
+    onPressed: onPressed,
+    icon: Icon(icon, color: Colors.white),
+    label: Text(
+      label,
+      style: const TextStyle(color: Colors.white, fontSize: 16),
+    ),
   );
 }

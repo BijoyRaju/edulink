@@ -1,6 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edu_link/controller/attendance_controller.dart';
 import 'package:edu_link/controller/student_controller.dart';
+import 'package:edu_link/controller/teacher_controller.dart';
 import 'package:edu_link/model/attendance_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,12 +36,7 @@ class _AttendanceState extends State<Attendance> {
   Widget build(BuildContext context) {
     final attendanceController = context.watch<AttendanceController>();
     final studentController = context.watch<StudentController>();
-    if(studentController.students.isEmpty && !studentController.isLoading){
-      studentController.fetchStudentByTeacher();
-    }
-    if(attendanceController.attendanceList.isEmpty && !attendanceController.isLoading){
-      attendanceController.fetchAttendanceByDate(selectedDate);
-    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Take Attendance"),
@@ -83,29 +78,29 @@ class _AttendanceState extends State<Attendance> {
             ],
           ),
           SizedBox(height: 10.h),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Wrap(
-              spacing: 8.sp,
-              children: statuses.map((status) {
-                return ChoiceChip(
-                  label: Text(status),
-                  selected: false,
-                  selectedColor: _getStatusColor(status),
-                  onSelected: (_) {
-                    setState(() {
-                      for (var student in studentController.students) {
-                        attendanceController.updateAttendance(
-                          student.studentId,
-                          {"status": status, "date": Timestamp.fromDate(DateTime(selectedDate.year, selectedDate.month, selectedDate.day))}
-                        );
-                      }
-                    });
-                  },
-                );
-              }).toList(),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: Wrap(
+          //     spacing: 8.sp,
+          //     children: statuses.map((status) {
+          //       return ChoiceChip(
+          //         label: Text(status),
+          //         selected: false,
+          //         selectedColor: _getStatusColor(status),
+          //         onSelected: (_) {
+          //           setState(() {
+          //             for (var student in studentController.students) {
+          //               attendanceController.updateAttendance(
+          //                 student.studentId,
+          //                 {"status": status, "date": Timestamp.fromDate(DateTime(selectedDate.year, selectedDate.month, selectedDate.day))}
+          //               );
+          //             }
+          //           });
+          //         },
+          //       );
+          //     }).toList(),
+          //   ),
+          // ),
           const Divider(),
           Expanded(
             child:studentController.isLoading
@@ -114,6 +109,8 @@ class _AttendanceState extends State<Attendance> {
                 itemCount: studentController.students.length,
                 itemBuilder: (context,index){
                   final student = studentController.students[index];
+                  final teacherController = context.read<TeacherController>();
+                  final teacher = teacherController.currentTeacher;
                   final attendance = attendanceController.attendanceList.firstWhere(
                     (a) => a.studentId == student.studentId &&
                           a.date.year == selectedDate.year &&
@@ -124,7 +121,7 @@ class _AttendanceState extends State<Attendance> {
                       studentId: student.studentId,
                       date: DateTime(selectedDate.year, selectedDate.month, selectedDate.day),
                       status: "Not Set",
-                      markedBy: "",
+                      markedBy: teacher?.teacherId ??"Unknown",
                       method: "Manual"
                     )
                   );
@@ -158,7 +155,7 @@ class _AttendanceState extends State<Attendance> {
                                 fontWeight: FontWeight.bold,
                               ),
                               onSelected: (_) {
-                                    setState(() {
+                                    final teacher = context.read<TeacherController>().currentTeacher;
                                       final existing = attendanceController.attendanceList.firstWhere(
                                         (a) => a.studentId == student.studentId &&
                                               DateFormat("dd-MM-yyyy").format(a.date) == formattedDate,
@@ -167,7 +164,7 @@ class _AttendanceState extends State<Attendance> {
                                           studentId: student.studentId,
                                           date: selectedDate,
                                           status: "Not Set",
-                                          markedBy: "",
+                                          markedBy: teacher?.teacherId ?? "Unknown",
                                           method: "Manual",
                                         ),
                                       );
@@ -179,7 +176,7 @@ class _AttendanceState extends State<Attendance> {
                                             studentId: student.studentId,
                                             date: DateTime(selectedDate.year, selectedDate.month, selectedDate.day),
                                             status: status,
-                                            markedBy: "",
+                                            markedBy: teacher?.teacherId ?? "Unknown",
                                             method: "Manual",
                                           ),
                                         );
@@ -189,7 +186,7 @@ class _AttendanceState extends State<Attendance> {
                                           {"status": status},
                                         );
                                       }
-                                    });
+
                                   },
 
                             );
@@ -206,7 +203,7 @@ class _AttendanceState extends State<Attendance> {
       )
     );
   }
-    // 🎨 Status → Color mapping
+    //  Status Color
   Color _getStatusColor(String status) {
     switch (status) {
       case "Holiday":

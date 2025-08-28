@@ -1,8 +1,10 @@
 import 'package:edu_link/controller/announcement_controller.dart';
 import 'package:edu_link/view/announcement/add_announcement.dart';
+import 'package:edu_link/view/announcement/view_announcement.dart';
 import 'package:edu_link/view/drawer/drawer.dart';
 import 'package:edu_link/widgets/announcement/announcement_widgets.dart';
 import 'package:edu_link/widgets/common/common.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -28,13 +30,15 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
     });
   }
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  String studentId = FirebaseAuth.instance.currentUser!.uid;
+
 
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<AnnouncementController>(context);
     return Scaffold(
       key: _scaffoldKey,
-      drawer: customDrawer(context, widget.role),
+      drawer: customDrawer(context, widget.role,studentId),
       floatingActionButton: widget.role == "admin"
           ? FloatingActionButton(
               onPressed: () {
@@ -96,7 +100,11 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                   itemCount: controller.announcements.length,
                   itemBuilder: (context,index){
                     final announcement = controller.announcements[index];
-                    return AnnouncementTile(title: announcement.title, description: announcement.description);
+                    return AnnouncementTile(
+                      title: announcement.title,
+                      description: announcement.description,
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ViewAnnouncement(announcement: announcement,role: widget.role,))),
+                    );
                   }),
           ),
         ],

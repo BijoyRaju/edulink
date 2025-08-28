@@ -16,9 +16,10 @@ class AddStudentScreen extends StatefulWidget {
 
 class _AddStudentScreenState extends State<AddStudentScreen> {
 
-  final StudentController controller = StudentController();
-
-  Future<void> _pickDate({required TextEditingController textController,required void Function(DateTime) onDatePicked}) async {
+  Future<void> _pickDate({
+      required TextEditingController textController,
+      required void Function(DateTime) onDatePicked
+    }) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -44,6 +45,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.watch<StudentController>();
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add Student"),
@@ -160,7 +162,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
             customButton(text: "Add ", onPressed: ()async{
             if(validateStudentForm(context, controller)){
               await controller.registerStudent(context);
-              if(context.mounted) Navigator.pop(context);
+              if(context.mounted) Navigator.pop(context,true);
               }
             }
               ),
@@ -171,6 +173,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     ),
   );
 }
+
  // Validation
  bool validateStudentForm(BuildContext context, StudentController controller) {
   if (controller.nameController.text.isEmpty) {

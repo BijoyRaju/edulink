@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:edu_link/controller/fee_controller.dart';
 import 'package:edu_link/model/student_model.dart';
 import 'package:edu_link/services/auth_service.dart';
 import 'package:edu_link/services/student_service.dart';
@@ -10,6 +13,7 @@ class StudentController extends ChangeNotifier {
 
   final AuthService _authService = AuthService();
   final StudentService _studentService = StudentService();
+  final FeeController _feeController = FeeController();
   List<StudentModel> _students = [];
   bool _isLoading = false;
   String? _errorMessage;
@@ -102,6 +106,11 @@ class StudentController extends ChangeNotifier {
       if (result == "success") {
         showSnackBarMessage(context, "Student registered successfully");
         clearController();
+        if(role == "admin"){
+          await fetchStudents();
+        }else if(role == "teacher"){
+          await fetchStudentByTeacher();
+        }
       } else {
         showSnackBarMessage(context, result);
       }
@@ -119,9 +128,12 @@ class StudentController extends ChangeNotifier {
       if(studentId == null){
         throw Exception("Student not found");
       }
+      log("student ID :$studentId");
       _currentStudent = await _studentService.getCurrentStudent(studentId);
     }catch(e){
       _errorMessage = e.toString();
+      log("Error in fetching current student: $e");
+
     }finally{
       _isLoading = false;
       notifyListeners();
@@ -140,7 +152,14 @@ class StudentController extends ChangeNotifier {
       if(adminId == null){
         throw Exception("Admin not logged In");
       }
+      // Fetch Students under the admin
       _students = await _studentService.getStudentsByAdmin(adminId);
+
+      // Fetch monthly fees for every student under the admin
+      final now = DateTime.now();
+      for (var student in _students){
+        await _feeController.ensureMonthlyFee(student.studentId, now.year, now.month);
+      }
     }catch(e){
       _errorMessage = e.toString();
     }finally{

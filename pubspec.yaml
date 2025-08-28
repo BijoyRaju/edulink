@@ -43,7 +43,11 @@ dependencies:
   shared_preferences: ^2.5.3
   intl: ^0.20.2
   uuid: ^4.5.1
-  
+  stream_chat_flutter: ^9.16.0
+  fl_chart: ^1.0.0
+  razorpay_flutter: ^1.4.0
+  firebase_messaging: ^16.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
