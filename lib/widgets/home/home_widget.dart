@@ -155,7 +155,7 @@ Widget customTileStudent(String title, String subtitle,String trailing, VoidCall
 
 Widget customTileTeacher(String name,String subject,double width){
   return Container(
-    width: width.w,
+    width: double.infinity,
     padding: EdgeInsets.all(16.w),
     decoration: BoxDecoration(
       color: const Color(0xFF254F43),
@@ -177,5 +177,112 @@ Widget customTileTeacher(String name,String subject,double width){
         color: Colors.white70,),
       ),
   ]),
+  );
+}
+
+
+Widget studentInfo({
+  required String studentName,
+  required String stdClass,
+  required String rollNo,
+  required String parentName,
+  required String phoneNo
+  }){
+  return Padding(
+    padding: const EdgeInsets.only(left: 10,right: 10),
+    child: Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFF254F43),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.6),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+        Text("Welcome, $studentName",
+          style: TextStyle(
+          fontSize: 20.sp,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),),
+        SizedBox(height: 8.h),
+        Text("Class              :  $stdClass",
+          style: TextStyle(
+          fontSize: 16.sp,
+          color: Colors.white70,),
+        ),
+        SizedBox(height: 5.h),
+        Text("Roll No           :  $rollNo",
+          style: TextStyle(
+          fontSize: 16.sp,
+          color: Colors.white70,),
+        ),
+        SizedBox(height: 5.h),
+        Text("Parent Name :  $parentName",
+          style: TextStyle(
+          fontSize: 16.sp,
+          color: Colors.white70,),
+        ),
+        SizedBox(height: 5.h),
+        Text("Contact No    :  $phoneNo",
+          style: TextStyle(
+          fontSize: 16.sp,
+          color: Colors.white70,),
+        ),
+      ]),
+    ),
+  );
+}
+
+Widget studentAttendanceContainer({required String present,required String absent}){
+  return Padding(
+    padding: const EdgeInsets.only(left: 10,right: 10,top: 14),
+    child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: const Color(0xFF29725E),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.6),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Text("Attendance",style: TextStyle(
+                fontSize: 18.sp,fontWeight: FontWeight.bold,color: Colors.white),),
+            ),
+            Text("This Month",
+              style: TextStyle(
+              fontSize: 16.sp,
+              color: Colors.white70,),),
+            Text("Present  :  $present",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white
+              )),
+              Text("Absent   :  $absent",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white
+              ),
+            )
+          ],
+        )
+    ),
   );
 }

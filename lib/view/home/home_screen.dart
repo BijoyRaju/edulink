@@ -2,9 +2,12 @@ import 'package:edu_link/view/drawer/drawer.dart';
 import 'package:edu_link/view/home/admin_tabs/admin_overview.dart';
 import 'package:edu_link/view/home/admin_tabs/teacher_list_screen.dart';
 import 'package:edu_link/view/home/admin_tabs/student_tab.dart';
+import 'package:edu_link/view/home/student_tabs/attendace_dashboard.dart';
+import 'package:edu_link/view/home/student_tabs/student_dashboard.dart';
 import 'package:edu_link/view/home/teacher_tabs/teacher_dashboard.dart';
 import 'package:edu_link/view/home/teacher_tabs/teacher_student_tab.dart';
 import 'package:edu_link/widgets/common/common.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -17,6 +20,7 @@ class HomeScreen extends StatelessWidget {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+String studentId = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +30,7 @@ class HomeScreen extends StatelessWidget {
       length: tabs.length,
       child: Scaffold(
         key: _scaffoldKey,
-        drawer: customDrawer(context,role),
+        drawer: customDrawer(context,role,studentId),
         body: Column(
           children: [
             Stack(
@@ -76,7 +80,8 @@ class HomeScreen extends StatelessWidget {
     ];
     }else{
       return  [
-        Tab(text: "Dashboard")
+        Tab(text: "Dashboard"),
+        Tab(text: "Attendance",)
       ];
     }
   }
@@ -85,7 +90,7 @@ class HomeScreen extends StatelessWidget {
     if(role == "admin"){
       return [
         // Admin overview UI
-        adminOverview(context),
+        AdminOverview(),
 
         // Student Tab View(Admin)
         StudentTab(),
@@ -102,9 +107,8 @@ class HomeScreen extends StatelessWidget {
       ];
     }else{
       return [
-        Center(
-          child: Text("Student Dashboard"),
-        ),
+        StudentDashboard(),
+        AttendanceDashboard()
       ];
     }
   }

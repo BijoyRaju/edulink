@@ -1,8 +1,9 @@
-import 'package:edu_link/controller/auth_controller.dart';
+import 'package:edu_link/controller/teacher_controller.dart';
 import 'package:edu_link/widgets/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class AddTeacherScreen extends StatefulWidget {
   const AddTeacherScreen({super.key});
@@ -13,26 +14,9 @@ class AddTeacherScreen extends StatefulWidget {
 
 class _AddStudentScreenState extends State<AddTeacherScreen> {
 
-  final AuthController controller = AuthController();
-
-  Future<void> _pickDate({required TextEditingController textController,required void Function(DateTime) onDatePicked}) async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1980),
-      lastDate: DateTime(2100),
-    );
-
-    if (pickedDate != null) {
-      setState(() {
-        textController.text = DateFormat('dd-MM-yyyy').format(pickedDate);
-        onDatePicked(pickedDate);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<TeacherController>(context,listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add Teacher"),
@@ -81,7 +65,7 @@ class _AddStudentScreenState extends State<AddTeacherScreen> {
             customButton(text: "Add ", onPressed: ()async{
               if(validateTeacherForm(context, controller)){
               await controller.registerTeacher(context);
-              if(context.mounted) Navigator.pop(context);
+              if(context.mounted) Navigator.pop(context,true);
               }
             })
           ],
@@ -91,7 +75,7 @@ class _AddStudentScreenState extends State<AddTeacherScreen> {
   }
 
   // Validate
-  bool validateTeacherForm(BuildContext context, AuthController controller) {
+  bool validateTeacherForm(BuildContext context, TeacherController controller) {
   if (controller.nameController.text.isEmpty) {
     showError(context, "Name is required");
     return false;
@@ -130,6 +114,22 @@ class _AddStudentScreenState extends State<AddTeacherScreen> {
 
   return true;
 }
+
+  Future<void> _pickDate({required TextEditingController textController,required void Function(DateTime) onDatePicked}) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1980),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        textController.text = DateFormat('dd-MM-yyyy').format(pickedDate);
+        onDatePicked(pickedDate);
+      });
+    }
+  }
 
 void showError(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(

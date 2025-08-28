@@ -14,13 +14,11 @@ class TeacherListScreen extends StatefulWidget {
 
 class _TeacherListScreenState extends State<TeacherListScreen> {
 
-  final TeacherController controller = TeacherController();
   @override
   void initState() {
     Future.microtask((){
       if(mounted){
-      final teacherController =  Provider.of<TeacherController>(context,listen: false);
-      teacherController.fetchTeachers();
+      Provider.of<TeacherController>(context,listen: false).fetchTeachers();
       }
     });
     super.initState();
@@ -61,8 +59,11 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(onPressed: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) => AddTeacherScreen()));
+      floatingActionButton: FloatingActionButton(onPressed: ()async{
+      final result = await Navigator.push(context,MaterialPageRoute(builder: (context) => AddTeacherScreen()));
+    if (result == true && mounted) {
+      if(context.mounted) Provider.of<TeacherController>(context, listen: false).fetchTeachers();
+    }
       },child: Icon(Icons.add),),
     );
   }

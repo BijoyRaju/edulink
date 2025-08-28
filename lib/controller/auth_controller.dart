@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:edu_link/services/auth_service.dart';
 import 'package:edu_link/view/bottom_navigation/bottom_navigation_screen.dart';
 import 'package:edu_link/view/login/login_screen.dart';
@@ -26,6 +28,7 @@ class AuthController {
 
   // Register Admin
   Future<void> registerAdmin(BuildContext context) async {
+    
     String result = await _authService.registerAdmin(
       name: nameController.text.trim(),
       email: emailController.text.trim(),
@@ -61,6 +64,8 @@ class AuthController {
         await prefs.setString("userId", userId);
         await prefs.setString("role",userRole);
         await prefs.setBool("isLoggedIn", true);
+        log(userId);
+        log(userRole);
 
         if (userRole != "admin" && adminId != null) {
         // Save adminId for teacher/student
@@ -78,36 +83,40 @@ class AuthController {
   }
 
   // Register Teacher
-  Future<void> registerTeacher(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? adminId = prefs.getString("userId");
-    if (context.mounted) {
-      if (adminId == null) {
-        showSnackBarMessage(context, "Admin not logged in");
-        return;
-      }
-
-      final result = await _authService.registerTeacher(
-        adminId: adminId,
-        name: nameController.text.trim(),
-        password: passwordController.text.trim(),
-        email: emailController.text.trim(),
-        phone: phoneController.text.trim(),
-        subject: subjectController.text.trim(),
-        dateOfBirth: dateOfBirth!,
-        joinDate: joinDate!,
-        additionalInfo: additinalInfoController.text.trim(),
-        role: 'teacher',
-      );
-      if (context.mounted) {
-        if (result == "success") {
-          showSnackBarMessage(context, "Teacher registration success");
-        } else {
-          showSnackBarMessage(context, result);
-        }
-      }
-    }
-  }
+  // Future<void> registerTeacher(BuildContext context) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? adminId = prefs.getString("userId");
+  //   if (context.mounted) {
+  //     if (adminId == null) {
+  //       showSnackBarMessage(context, "Admin not logged in");
+  //       return;
+  //     }
+  //   try{
+  //     final result = await _authService.registerTeacher(
+  //       adminId: adminId,
+  //       name: nameController.text.trim(),
+  //       password: passwordController.text.trim(),
+  //       email: emailController.text.trim(),
+  //       phone: phoneController.text.trim(),
+  //       subject: subjectController.text.trim(),
+  //       dateOfBirth: dateOfBirth!,
+  //       joinDate: joinDate!,
+  //       additionalInfo: additinalInfoController.text.trim(),
+  //       role: 'teacher',
+  //     );
+  //     if (context.mounted) {
+  //       if (result == "success") {
+  //         showSnackBarMessage(context, "Teacher registration success");
+          
+  //       } else {
+  //         showSnackBarMessage(context, result);
+  //       }
+  //     }
+  //   }catch(e){
+  //     if(context.mounted) showSnackBarMessage(context, "Error in registring teacher $e");
+  //   }
+  //   }
+  // }
 
 
   // LogOut User

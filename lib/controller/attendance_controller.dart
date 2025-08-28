@@ -9,6 +9,22 @@ class AttendanceController extends ChangeNotifier{
   bool isLoading = false;
   String? errorMessage;
   List<AttendanceModel> attendanceList = [];
+  String selectedYear = DateTime.now().year.toString();
+  String selectdMonth = DateTime.now().month.toString();
+
+  // update Year
+  void updateYear(String year,String studentId)async{
+    selectedYear = year;
+    await fetchMonthlyAttendance(studentId, int.parse(year), int.parse(selectdMonth));
+    notifyListeners();
+  }
+
+  // Update Month
+  void updateMonth(String month, String studentId)async{
+    selectdMonth = month;
+    await fetchMonthlyAttendance(studentId, int.parse(selectedYear), int.parse(month));
+    notifyListeners();
+  }
 
   // Fetch Attendance by Date
   Future<void> fetchAttendanceByDate(DateTime date)async{
@@ -63,6 +79,48 @@ class AttendanceController extends ChangeNotifier{
     }catch(e){
       errorMessage = e.toString();
       log("Error in update $e");
+    }finally{
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Fetch Attendance Monthly
+  Map<String, int> monthlySummary = {
+    "Present": 0,
+    "Absent": 0,
+    "Holiday": 0,
+    "Not Set": 0,
+  };
+  Future<void> fetchMonthlyAttendance(String studentId,int year,int month)async{
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+    try{
+      final records = await _service.getAttendanceforMonth(studentId, year, month);
+      monthlySummary = {
+        "Present" : 0,
+        "Absent" : 0,
+        "Holiday" : 0,
+        "Not Set" : 0
+      };
+      for(var record in records){
+          switch (record.status) {
+          case "Present":
+            monthlySummary["Present"] = (monthlySummary["Present"] ?? 0) + 1;
+            break;
+          case "Absent":
+            monthlySummary["Absent"] = (monthlySummary["Absent"] ?? 0) + 1;
+            break;
+          case "Holiday":
+            monthlySummary["Holiday"] = (monthlySummary["Holiday"] ?? 0) + 1;
+            break;
+          default:
+            monthlySummary["Not Set"] = (monthlySummary["Not Set"] ?? 0) + 1;
+        }
+      }
+    }catch(e){
+      errorMessage = e.toString();
     }finally{
       isLoading = false;
       notifyListeners();

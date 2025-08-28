@@ -1,5 +1,6 @@
 import 'package:edu_link/controller/announcement_controller.dart';
 import 'package:edu_link/controller/attendance_controller.dart';
+import 'package:edu_link/controller/fee_controller.dart';
 import 'package:edu_link/controller/student_controller.dart';
 import 'package:edu_link/controller/teacher_controller.dart';
 import 'package:edu_link/firebase_options.dart';
@@ -8,8 +9,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-// import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
-// import 'package:stream_chat_flutter/stream_chat_flutter.dart' as stream;
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,19 +18,21 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // final client = stream.StreamChatClient(
-  //   'vuhzsbmwtcrb',
-  //   logLevel: stream.Level.INFO,
-  // );
+  final client = StreamChatClient(
+    'vuhzsbmwtcrb',
+    logLevel: Level.INFO,
+  );
 
   // final firebaseUser = fb_auth.FirebaseAuth.instance.currentUser;
 
 
-  runApp(MyApp());
+  runApp(MyApp(client: client));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key ,required this.client}) : super(key: key);
+
+  final StreamChatClient client;
   
   @override
   Widget build(BuildContext context) {
@@ -41,8 +44,12 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => StudentController()..fetchStudents()),
           ChangeNotifierProvider(create: (_) => AnnouncementController()),
           ChangeNotifierProvider(create: (_) => AttendanceController()),
+          ChangeNotifierProvider(create: (_) => FeeController())
         ],
         child: MaterialApp(
+          builder: (context,child){
+            return StreamChat(client: client, child: child);
+          },
             debugShowCheckedModeBanner: false,
             home: SplashScreen()
           ),

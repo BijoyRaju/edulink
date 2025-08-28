@@ -16,8 +16,6 @@ class StudentTab extends StatefulWidget {
 
 class _StudentTabState extends State<StudentTab> {
 
-  final StudentController studentController = StudentController();
-
   @override
   void initState() {
     Future.microtask((){
@@ -54,8 +52,8 @@ class _StudentTabState extends State<StudentTab> {
           );
         }
       ),
-      floatingActionButton: FloatingActionButton(onPressed: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) => AddStudentScreen()));
+      floatingActionButton: FloatingActionButton(onPressed: ()async{
+       Navigator.push(context, MaterialPageRoute(builder: (context) => AddStudentScreen()));
       },child: Icon(Icons.add),),
     );
   }
