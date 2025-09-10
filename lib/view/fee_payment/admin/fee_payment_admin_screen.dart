@@ -1,7 +1,11 @@
 import 'package:edu_link/controller/fee_controller.dart';
 import 'package:edu_link/controller/student_controller.dart';
 import 'package:edu_link/view/fee_payment/admin/payment_update_screen.dart';
+import 'package:edu_link/widgets/common/common.dart';
+import 'package:edu_link/widgets/common/list_shimmer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class FeePaymentAdminScreen extends StatefulWidget {
@@ -18,7 +22,6 @@ class _FeePaymentAdminScreenState extends State<FeePaymentAdminScreen> {
     Future.microtask(() {
       if(mounted){ 
         final feeController = Provider.of<FeeController>(context, listen: false);
-        
         feeController.fetchAllFees(); 
       }
     });
@@ -60,36 +63,42 @@ class _FeePaymentAdminScreenState extends State<FeePaymentAdminScreen> {
           children: [
             // Pending Tab 1
             feeController.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : feeController.pendingFees.isEmpty
+                ? const ListShimmer()
+                : feeController.errorMessage.isNotEmpty
+                  ? Center(child: Text("Error: ${feeController.errorMessage}"))
+                  : feeController.pendingFees.isEmpty
                     ? const Center(child: Text("No Pending Transactions"))
                     : ListView.separated(
-                        separatorBuilder: (_, __) => const Divider(),
+                        separatorBuilder: (_, __) => const Divider(
+                          
+                        ),
                         itemCount: feeController.pendingFees.length,
                         itemBuilder: (context, index) {
                           final fee = feeController.pendingFees[index];
                           return ListTile(
                             leading: const Icon(Icons.warning, color: Colors.red),
                             title: Text("Name: ${getStudentName(fee.studentId)}"),
-                            subtitle: Text("Amount: ₹${fee.amount}"),
-                            trailing: Text(
-                              fee.status,
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                            onTap: (){
+                            subtitle: customText(text: "Due: ${DateFormat('MMM, yyyy').format(fee.month!)}",fontSize: 14.sp),
+                            trailing: customText(text: "Amount: ${fee.amount}"),
+                            onTap: ()async{
                               final student = studentController.students.firstWhere(
-                                (s) => s.studentId == fee.studentId
+                                (s) => s.studentId == fee.studentId,
+                                
                               );
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentUpdateScreen(fee: fee, student: student)));
+                              await Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentUpdateScreen(fee: fee, student: student)));
+                              if(mounted){
+                                await feeController.fetchAllFees();
+                              }
                             },
                           );
                         },
                       ),
-
             // Tab 2 Paid
             feeController.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : feeController.studentFees
+                ? const ListShimmer()
+                : feeController.errorMessage.isNotEmpty
+                  ? Center(child: Text("Error: ${feeController.errorMessage}"))
+                  : feeController.studentFees
                         .where((f) => f.status == "Paid")
                         .isEmpty
                     ? const Center(child: Text("No Paid Fees yet"))
@@ -99,7 +108,7 @@ class _FeePaymentAdminScreenState extends State<FeePaymentAdminScreen> {
                             .map((fee) => ListTile(
                                   leading: const Icon(Icons.check_circle,
                                       color: Colors.green),
-                                  title: Text("Student ID: ${fee.studentId}"),
+                                  title: Text("Name: ${getStudentName(fee.studentId)}"),
                                   subtitle: Text("Amount: ₹${fee.amount}"),
                                   trailing: Text(
                                     fee.status,

@@ -6,8 +6,9 @@ class FeeModel {
   String transactionId;
   double amount;
   String status;
-  DateTime paidOn;
-  DateTime month;
+  String? paymentMethod;
+  DateTime? paidOn;
+  DateTime? month;
 
   FeeModel({
     required this.feeId,
@@ -15,8 +16,9 @@ class FeeModel {
     required this.transactionId,
     required this.amount,
     required this.status,
-    required this.paidOn,
-    required this.month
+    this.paymentMethod,
+    this.paidOn,
+    this.month
   });
 
   Map<String, dynamic> toMap() {
@@ -26,8 +28,9 @@ class FeeModel {
       "transaction_id" : transactionId,
       "amount" : amount,
       "status" : status,
-      "paid_on" : Timestamp.fromDate(paidOn),
-      "month" : Timestamp.fromDate(month)
+      "payment_method" : paymentMethod,
+      "paid_on" : paidOn != null ? Timestamp.fromDate(paidOn!) : null,
+      "month" : month != null ? Timestamp.fromDate(month!) : null
     };
   }
 
@@ -38,8 +41,15 @@ class FeeModel {
       transactionId: map['transaction_id'] ?? "",
       amount: (map['amount'] as num).toDouble(),
       status: map['status'] ?? "Pending",
-      paidOn: (map['paid_on'] as Timestamp).toDate(),
-      month: (map['month'] as Timestamp).toDate()
+      paymentMethod: map['payment_method'],
+      paidOn: map['paid_on'] != null 
+        ? (map['paid_on'] as Timestamp).toDate()
+        : null,
+      month: map['month'] != null 
+        ? (map['month'] as Timestamp).toDate()
+        : null,
     );
   }
+
+
 }

@@ -47,6 +47,7 @@ dependencies:
   fl_chart: ^1.0.0
   razorpay_flutter: ^1.4.0
   firebase_messaging: ^16.0.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
