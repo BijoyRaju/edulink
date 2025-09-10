@@ -24,19 +24,24 @@ class PaymentUpdateScreen extends StatefulWidget {
 }
 
 class _PaymentUpdateScreenState extends State<PaymentUpdateScreen> {
+
+  late FeeController feeController;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-    context.read<FeeController>().loadFee(widget.fee.feeId);
-  });
+      feeController.loadFee(widget.fee.feeId);
+    });
+    feeController = context.read<FeeController>(); 
   }
 
   @override
   void dispose() {
-    context.read<FeeController>().selectedFee = null;
+    feeController.selectedFee = null; 
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {

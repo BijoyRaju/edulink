@@ -33,7 +33,26 @@ Widget homeScreenContainerTwo(double height,double width,Color colors,String tex
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        customText(text: text1,color: Colors.white,fontSize: 14.sp,fontWeight: FontWeight.bold),
+        customText(text: text1,color: Colors.white,fontSize: 13.sp,fontWeight: FontWeight.bold),
+        SizedBox(height: 5.h),
+        customText(text: text2,fontSize: 20.sp,fontWeight: FontWeight.bold,color: Colors.white)
+     ],
+    ),
+  );
+}
+
+Widget homeScreenContainerTheree(double height,double width,Color colors,String text1, var text2){
+  return Container(
+    height: height,
+    width: width,
+    decoration: BoxDecoration(
+      color: colors,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        customText(text: text1,color: Colors.white,fontSize: 13.sp,fontWeight: FontWeight.bold),
         SizedBox(height: 5.h),
         customText(text: text2,fontSize: 20.sp,fontWeight: FontWeight.bold,color: Colors.white)
      ],
@@ -285,4 +304,13 @@ Widget studentAttendanceContainer({required String present,required String absen
         )
     ),
   );
+}
+
+Widget recentTransactionCard({required String studentName,required String paymentMethod,required double amount}){
+  return Card(
+    child: ListTile(
+    title: Text("Name : $studentName"),
+    subtitle: Text("Payment Method : $paymentMethod"),
+    trailing: Text("Amount : $amount"),
+  ));
 }

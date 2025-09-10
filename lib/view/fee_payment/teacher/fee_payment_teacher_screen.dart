@@ -16,22 +16,20 @@ class FeePaymentTeacherScreen extends StatefulWidget {
 }
 
 class _FeePaymentTeacherScreenState extends State<FeePaymentTeacherScreen> {
+
   @override
   void initState() {
     super.initState();
-    Future.microtask(() async {
-    if (mounted) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
       final studentController = Provider.of<StudentController>(context, listen: false);
       final feeController = Provider.of<FeeController>(context, listen: false);
 
-      await studentController.fetchStudentByTeacher(); // Student under teacher
-
+      await studentController.fetchStudentByTeacher();
       await feeController.fetchFeesForStudents(
-          studentController.students.map((s) => s.studentId).toList()
-      ); // Fetch students fees under teacher
-    }
-  });
-
+        studentController.students.map((s) => s.studentId).toList(),
+      );
+    });
   }
 
   @override
@@ -129,6 +127,23 @@ class _FeePaymentTeacherScreenState extends State<FeePaymentTeacherScreen> {
                                   fee.status,
                                   style: const TextStyle(color: Colors.green),
                                 ),
+                                onTap: ()async{
+                                  final student = studentController.students.firstWhere(
+                                (s) => s.studentId == fee.studentId,
+                              );
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PaymentUpdateScreen(
+                                    fee: fee,
+                                    student: student,
+                                  ),
+                                ),
+                              );
+                              if (mounted) {
+                                await feeController.fetchFees(student.studentId);
+                              }
+                                },
                               ),
                             )
                             .toList(),

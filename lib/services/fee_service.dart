@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edu_link/model/fee_model.dart';
 
@@ -91,7 +90,49 @@ class FeeService {
   }
 }
 
-  
-  
+// Revenue this Month
+  Future<double> getThisMonthRevenue() async {
+    try {
+      final now = DateTime.now();
+      final startOfMonth = DateTime(now.year, now.month, 1);
+      final startOfNextMonth = DateTime(now.year, now.month + 1, 1);
+
+      final query = await _firestore
+            .collection(_collection)
+            .where("status", isEqualTo: "Paid")
+            .where("paid_on", isGreaterThanOrEqualTo: Timestamp.fromDate(startOfMonth))
+            .where("paid_on", isLessThan: Timestamp.fromDate(startOfNextMonth))
+            .get();
+
+      final paidDocs = query.docs.where((doc) => doc["status"] == "Paid");
+
+      double total = 0;
+      for (var doc in paidDocs) {
+        final data = doc.data();
+        total += (data["amount"] as num).toDouble();
+      }
+
+      return total;
+    } catch (e) {
+      log("Error Fetching Monthly revenue: $e");
+      throw Exception("Error fetching monthly revenue: $e");
+    }
+  }
+
+  // Recent Transaction
+  Future<List<FeeModel>> fetchRecentTransactions() async {
+    try {
+      final snapshot = await _firestore
+          .collection(_collection)
+          .where("status", isEqualTo: "Paid") 
+          .orderBy("paid_on", descending: true) 
+          .limit(5)
+          .get();
+
+      return snapshot.docs.map((doc) => FeeModel.fromMap(doc.data())).toList();
+    } catch (e) {
+      throw Exception("Error fetching recent transactions: $e");
+    }
+  }
 
 }

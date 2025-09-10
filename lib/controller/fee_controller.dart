@@ -6,9 +6,11 @@ class FeeController extends ChangeNotifier{
   final FeeService _feeService = FeeService();
   List<FeeModel> studentFees = [];
   List<FeeModel> pendingFees = [];
+  List<FeeModel> recentTransactions = [];
   bool isLoading = false;
   String errorMessage = "";
   FeeModel? selectedFee;
+  double monthlyRevenue = 0;
 
   // Fetch Fees for student
   Future<void> fetchFees(String studentId)async{
@@ -185,6 +187,30 @@ Future<void> fetchFeesForStudents(List<String> studentIds) async {
     } finally {
       isLoading = false;
       notifyListeners();
+    }
+  }
+
+  // Fetch This month revenue
+  Future<void> fetchThisMonthRevenue() async {
+  isLoading = true;
+  notifyListeners();
+  try {
+    monthlyRevenue = await _feeService.getThisMonthRevenue();
+  } catch (e) {
+    errorMessage = e.toString();
+  } finally {
+    isLoading = false;
+    notifyListeners();
+  }
+}
+
+// Fetch Recent Transaction
+  Future<void> loadRecentTransactions() async {
+    try{
+      recentTransactions = await _feeService.fetchRecentTransactions();
+      notifyListeners();
+    }catch(e){
+      errorMessage = e.toString();
     }
   }
 

@@ -2,6 +2,7 @@ import 'package:edu_link/controller/student_controller.dart';
 import 'package:edu_link/view/student/add_student_screen.dart';
 import 'package:edu_link/view/student/student_view_screen.dart';
 import 'package:edu_link/widgets/common/common.dart';
+import 'package:edu_link/widgets/common/list_shimmer.dart';
 import 'package:edu_link/widgets/home/home_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -32,7 +33,7 @@ class _StudentTabState extends State<StudentTab> {
       body: Consumer<StudentController>(
         builder: (context,studentController,child){
           if(studentController.isLoading){
-            return const Center(child: CircularProgressIndicator());
+            return const ListShimmer();
           }if(studentController.students.isEmpty){
             return const Center(child: Text("No Students found"));
           }if(studentController.errorMessage != null){

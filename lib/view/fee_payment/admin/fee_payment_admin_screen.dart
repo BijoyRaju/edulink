@@ -16,16 +16,16 @@ class FeePaymentAdminScreen extends StatefulWidget {
 }
 
 class _FeePaymentAdminScreenState extends State<FeePaymentAdminScreen> {
+
   @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      if(mounted){ 
+    void initState() {
+      super.initState();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
         final feeController = Provider.of<FeeController>(context, listen: false);
-        feeController.fetchAllFees(); 
-      }
-    });
-  }
+        feeController.fetchAllFees();
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +82,7 @@ class _FeePaymentAdminScreenState extends State<FeePaymentAdminScreen> {
                             trailing: customText(text: "Amount: ${fee.amount}"),
                             onTap: ()async{
                               final student = studentController.students.firstWhere(
-                                (s) => s.studentId == fee.studentId,
-                                
-                              );
+                                (s) => s.studentId == fee.studentId);
                               await Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentUpdateScreen(fee: fee, student: student)));
                               if(mounted){
                                 await feeController.fetchAllFees();
@@ -114,6 +112,14 @@ class _FeePaymentAdminScreenState extends State<FeePaymentAdminScreen> {
                                     fee.status,
                                     style: const TextStyle(color: Colors.green),
                                   ),
+                                  onTap: ()async{
+                                    final student = studentController.students.firstWhere(
+                                      (s) => s.studentId == fee.studentId);
+                                    await Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentUpdateScreen(fee: fee, student: student)));
+                                    if(mounted){
+                                      await feeController.fetchAllFees();
+                                    }
+                                  },
                                 ))
                             .toList(),
                       ),

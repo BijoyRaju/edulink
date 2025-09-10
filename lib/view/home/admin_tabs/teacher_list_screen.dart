@@ -1,5 +1,6 @@
 import 'package:edu_link/view/teacher/add_teacher_screen.dart';
 import 'package:edu_link/view/teacher/teacher_view_screen.dart';
+import 'package:edu_link/widgets/common/list_shimmer.dart';
 import 'package:edu_link/widgets/home/home_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +31,7 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
       body: Consumer<TeacherController>(
         builder: (context, teacherController, child) {
           if (teacherController.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const ListShimmer();
           }
       
           if (teacherController.errorMessage != null) {
