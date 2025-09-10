@@ -29,9 +29,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   if(mounted){
     if(isLoggedIn && role != null){
-      // final client = StreamChat.of(context).client;
-      // final userId = prefs.getString('userId') ?? "Guest";
-      // await client.connectUser(User(id: userId,), client.devToken(userId).rawValue);
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BottomNavigationScreen(role: role)));
     }else{
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));

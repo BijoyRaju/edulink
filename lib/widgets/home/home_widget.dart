@@ -309,8 +309,8 @@ Widget studentAttendanceContainer({required String present,required String absen
 Widget recentTransactionCard({required String studentName,required String paymentMethod,required double amount}){
   return Card(
     child: ListTile(
-    title: Text("Name : $studentName"),
+    title: Text("Name : $studentName",style: TextStyle(fontSize: 14.sp)),
     subtitle: Text("Payment Method : $paymentMethod"),
-    trailing: Text("Amount : $amount"),
+    trailing: Text("Amount : $amount",style: TextStyle(fontSize: 14.sp)),
   ));
 }
