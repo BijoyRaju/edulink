@@ -14,7 +14,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   List<String> statuses = ["Not Set", "Holiday", "Present", "Absent"];
 
-  // Example student list
   List<Map<String, dynamic>> students = [
     {"roll": 1, "name": "John Doe", "class": "10 A", "status": "Not Set"},
     {"roll": 2, "name": "Jane Smith", "class": "10 A", "status": "Not Set"},

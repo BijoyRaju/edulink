@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:edu_link/services/auth_service.dart';
 import 'package:edu_link/view/bottom_navigation/bottom_navigation_screen.dart';
 import 'package:edu_link/view/login/login_screen.dart';
@@ -46,7 +45,6 @@ class AuthController {
       }
     }
   }
-
 
 
   // Login

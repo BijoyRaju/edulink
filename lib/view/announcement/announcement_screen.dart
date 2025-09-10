@@ -4,6 +4,7 @@ import 'package:edu_link/view/announcement/view_announcement.dart';
 import 'package:edu_link/view/drawer/drawer.dart';
 import 'package:edu_link/widgets/announcement/announcement_widgets.dart';
 import 'package:edu_link/widgets/common/common.dart';
+import 'package:edu_link/widgets/common/list_shimmer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -93,7 +94,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
           ),
           Expanded(
             child: controller.isLoading 
-            ? const Center(child: CircularProgressIndicator())
+            ? const ListShimmer()
             : controller.errorMessage != null
               ? Center(child: Text(controller.errorMessage!))
               : ListView.builder(

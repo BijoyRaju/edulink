@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edu_link/model/fee_model.dart';
 
@@ -5,17 +7,30 @@ class FeeService {
   final _firestore = FirebaseFirestore.instance;
   final _collection = "fees";
 
-  Future <void> saveFee(FeeModel fee)async{
-    try{
-     await _firestore.collection(_collection).doc(fee.feeId).set({
-      ...fee.toMap(),
-      "paid_on": Timestamp.fromDate(fee.paidOn),
-      "month": Timestamp.fromDate(fee.month),
-    });
-    }catch(e){
+ Future<void> saveFee(FeeModel fee) async {
+    try {
+      await _firestore.collection(_collection).doc(fee.feeId).set({
+        ...fee.toMap(),
+        "paid_on": fee.paidOn != null ? Timestamp.fromDate(fee.paidOn!) : null,
+        "month": fee.month != null ? Timestamp.fromDate(fee.month!) : null,
+      });
+    } catch (e) {
       throw Exception("Error in saving fees $e");
     }
   }
+
+   Future<void> updateFee(FeeModel fee) async {
+    try {
+      await _firestore.collection(_collection).doc(fee.feeId).update({
+        ...fee.toMap(),
+        "paid_on": fee.paidOn != null ? Timestamp.fromDate(fee.paidOn!) : null,
+        "month": fee.month != null ? Timestamp.fromDate(fee.month!) : null,
+      });
+    } catch (e) {
+      throw Exception("Error in updating fee $e");
+    }
+  }
+
 
   // Get All Fees
    Future<List<FeeModel>> getAllFees() async {
@@ -23,7 +38,8 @@ class FeeService {
       final snapshot = await _firestore.collection("fees").get();
       return snapshot.docs.map((doc) => FeeModel.fromMap(doc.data())).toList();
     }catch(e){
-      throw Exception("Error in fetching all students fees: $e");
+      log("Error in fetching students fees: $e");
+      throw Exception("Error in fetching all  fees: $e");
     }
   }
 
@@ -59,6 +75,23 @@ class FeeService {
     }
   }
 
+
+  // Fetch all fees for a list of students
+  Future<List<FeeModel>> getFeesForStudents(List<String> studentIds) async {
+  try {
+    if (studentIds.isEmpty) return [];
+    final query = await _firestore
+        .collection(_collection)
+        .where("student_id", whereIn: studentIds)
+        .get();
+
+    return query.docs.map((doc) => FeeModel.fromMap(doc.data())).toList();
+  } catch (e) {
+    throw Exception("Error fetching fees for students: $e");
+  }
+}
+
+  
   
 
 }
