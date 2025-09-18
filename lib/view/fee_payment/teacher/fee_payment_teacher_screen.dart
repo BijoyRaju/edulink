@@ -45,7 +45,7 @@ class _FeePaymentTeacherScreenState extends State<FeePaymentTeacherScreen> {
         (s) => s.studentId == studentId,
         orElse: () => studentController.students.first,
       );
-      return student.name ?? "Unknown";
+      return student.name;
     }
 
     return DefaultTabController(

@@ -48,7 +48,7 @@ class _AdminOverviewState extends State<AdminOverview> {
     final student = studentController.students.firstWhere(
       (s) => s.studentId == studentId,
     );
-    return student.name ?? "Unknow Teacher";
+    return student.name;
   }
 
     return Padding(

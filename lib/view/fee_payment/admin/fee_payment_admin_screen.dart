@@ -39,7 +39,7 @@ class _FeePaymentAdminScreenState extends State<FeePaymentAdminScreen> {
   final student = studentController.students.firstWhere(
     (t) => t.studentId  == studentId,
   );
-  return student.name ?? "Unknow Student";
+  return student.name;
 }
 
     return DefaultTabController(
