@@ -18,6 +18,7 @@ class FeeService {
     }
   }
 
+  // Update Fee
    Future<void> updateFee(FeeModel fee) async {
     try {
       await _firestore.collection(_collection).doc(fee.feeId).update({

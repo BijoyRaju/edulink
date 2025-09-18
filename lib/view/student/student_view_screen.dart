@@ -1,40 +1,61 @@
 import 'package:edu_link/controller/teacher_controller.dart';
 import 'package:edu_link/widgets/common/common.dart';
+import 'package:edu_link/widgets/student/qr_popup.dart';
 import 'package:edu_link/widgets/student/student_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:edu_link/model/student_model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-
-class StudentViewScreen extends StatelessWidget {
+class StudentViewScreen extends StatefulWidget {
   final StudentModel student;
-
   const StudentViewScreen({super.key, required this.student});
 
   @override
-  Widget build(BuildContext context) {
-
-  final teacherController = Provider.of<TeacherController>(context);
-
-  String getTeacherName(String teacherId) {
-    if(teacherController.teacher.isEmpty){
-      return "No teacher found";
-    }
-  final teacher = teacherController.teacher.firstWhere(
-    (t) => t.teacherId == teacherId,
-  );
-  return teacher.name ?? "Unknow Teacher";
+  State<StudentViewScreen> createState() => _StudentViewScreenState();
 }
+
+class _StudentViewScreenState extends State<StudentViewScreen> {
+
+  String getTeacherName(String teacherId, TeacherController teacherController) {
+    if (teacherController.teacher.isEmpty) return "No teacher found";
+    try {
+      final teacher =
+          teacherController.teacher.firstWhere((t) => t.teacherId == teacherId);
+      return teacher.name;
+    } catch (_) {
+      return "Unknown Teacher";
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final teacherController = Provider.of<TeacherController>(context);
+    final student = widget.student;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F9),
       appBar: AppBar(
-        title: customText(text: student.name,color: Colors.white,fontSize: 20.sp),
+        title: customText(
+          text: student.name,
+          color: Colors.white,
+          fontSize: 20.sp,
+        ),
         foregroundColor: Colors.white,
-        backgroundColor: Color(0xFF254F43),
+        backgroundColor: const Color(0xFF254F43),
         elevation: 0,
         actions: [
+          IconButton(
+            onPressed: (){
+              showDialog(
+                context: context,
+                builder: (_) => QrPopup(
+                  studentId: widget.student.studentId,
+                  studentName: widget.student.name,
+                ));
+            },
+            icon: const Icon(Icons.qr_code),
+          ),
           IconButton(
             onPressed: () {
               // TODO: Edit action
@@ -57,9 +78,9 @@ class StudentViewScreen extends StatelessWidget {
             // Profile Circle
             CircleAvatar(
               radius: 50,
-              backgroundColor: Color(0xFF254F43),
+              backgroundColor: const Color(0xFF254F43),
               child: Text(
-                student.name[0].toUpperCase(),
+                student.name.isNotEmpty ? student.name[0].toUpperCase() : '?',
                 style: const TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
@@ -68,7 +89,6 @@ class StudentViewScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-
             Text(
               student.name,
               style: const TextStyle(
@@ -102,7 +122,8 @@ class StudentViewScreen extends StatelessWidget {
                     const Divider(),
                     detailTile(Icons.date_range, "DOB", student.dateOfBirth.toString()),
                     const Divider(),
-                    detailTile(Icons.school, "Teacher", getTeacherName(student.teacherId)),
+                    detailTile(Icons.school, "Teacher",
+                        getTeacherName(student.teacherId, teacherController)),
                   ],
                 ),
               ),

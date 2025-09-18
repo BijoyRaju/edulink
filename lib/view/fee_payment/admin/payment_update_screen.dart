@@ -2,7 +2,7 @@ import 'package:edu_link/controller/fee_controller.dart';
 import 'package:edu_link/model/fee_model.dart';
 import 'package:edu_link/model/student_model.dart';
 import 'package:edu_link/widgets/common/common.dart';
-import 'package:edu_link/widgets/common/list_shimmer.dart';
+// import 'package:edu_link/widgets/common/list_shimmer.dart';
 import 'package:edu_link/widgets/fees/fee_screen_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,19 +47,19 @@ class _PaymentUpdateScreenState extends State<PaymentUpdateScreen> {
   Widget build(BuildContext context) {
     return Consumer<FeeController>(
       builder: (context, feeController, _) {
-        final fee = feeController.selectedFee;
+        // final fee = feeController.selectedFee;
 
-        if (feeController.isLoading || fee == null) {
-          return const Scaffold(
-            body: Center(child: ListShimmer()),
-          );
-        }
+        // if (feeController.isLoading || fee == null) {
+        //   return const Scaffold(
+        //     body: Center(child: ListShimmer()),
+        //   );
+        // }
 
-        if (feeController.errorMessage != null && fee == null ) {
-          return Scaffold(
-            body: Center(child: Text("Error: ${feeController.errorMessage}")),
-          );
-        }
+        // if (feeController.errorMessage.isNotEmpty ) {
+        //   return Scaffold(
+        //     body: Center(child: Text("Error: ${feeController.errorMessage}")),
+        //   );
+        // }
         return Scaffold(
           appBar: AppBar(
             title: const Text("Payment"),
@@ -88,11 +88,11 @@ class _PaymentUpdateScreenState extends State<PaymentUpdateScreen> {
                 SizedBox(height: 10.h),
                 ListTile(
                   leading: const Icon(Icons.currency_rupee),
-                  title: customText(text: "Amount ${fee.amount}", fontSize: 16.sp),
-                  subtitle: customText(text: "Status: ${fee.status}", fontSize: 14.sp),
+                  title: customText(text: "Amount ${widget.fee.amount}", fontSize: 16.sp),
+                  subtitle: customText(text: "Status: ${widget.fee.status}", fontSize: 14.sp),
                   trailing: customText(
-                      text: fee.month != null 
-                        ? "Due: ${DateFormat('MMM, yyyy').format(fee.month!)}"
+                      text: widget.fee.month != null 
+                        ? "Due: ${DateFormat('MMM, yyyy').format(widget.fee.month!)}"
                         : "Due : N/A",
                       fontSize: 14.sp),
                 ),
@@ -100,19 +100,23 @@ class _PaymentUpdateScreenState extends State<PaymentUpdateScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    if (fee.status == "Pending")
+                    if (widget.fee.status == "Pending")
                       customIconButton(
                         label: "Reminder",
                         icon: Icons.notifications,
-                        onPressed: () {},
+                        onPressed: () async{
+                          final studentId = widget.student.studentId;
+                          await feeController.sendPendingFeeNotificationToStudent(widget.fee, studentId);
+                          if(context.mounted) showSnackBarMessage(context, "Reminder Send");
+                        },
                       ),
                     customIconButton(
                       label: "Update Status",
                       icon: Icons.attach_money,
                       onPressed: () async {
-                        final result = await showUpdateDialog(context, fee);
+                        final result = await showUpdateDialog(context, widget.fee);
                         if (result == true) {
-                          await feeController.loadFee(fee.feeId);
+                          // await feeController.loadFee(fee.feeId);
                           if (context.mounted) Navigator.pop(context, true);
                         }
                       },

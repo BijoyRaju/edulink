@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:edu_link/model/fee_model.dart';
 import 'package:edu_link/services/fee_service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class FeeController extends ChangeNotifier{
   final FeeService _feeService = FeeService();
@@ -11,6 +15,9 @@ class FeeController extends ChangeNotifier{
   String errorMessage = "";
   FeeModel? selectedFee;
   double monthlyRevenue = 0;
+
+  static const String _appId = "322f33fa-72f3-4bfc-a290-cbcc67cc80a7";
+  static const String _restApiKey = "os_v2_app_gixth6ts6nf7ziuqzpggpteau5omafxsnczuxdvfd6xug36bkkziuipfzj7oabz7iupdm3e56pnnsfan6t3d7pslzkpka2gxbhi7ywq";
 
   // Fetch Fees for student
   Future<void> fetchFees(String studentId)async{
@@ -31,6 +38,10 @@ class FeeController extends ChangeNotifier{
     notifyListeners();
     try {
       await _feeService.updateFee(fee);
+      //  send notification if pending
+      if (fee.status == "Pending") {
+        await _sendPendingFeeNotification(fee);
+      }
       await fetchFees(fee.studentId); 
     } catch (e) {
       errorMessage = e.toString();
@@ -44,7 +55,7 @@ class FeeController extends ChangeNotifier{
   isLoading = true;
   notifyListeners();
   try {
-    final allFees = await _feeService.getAllFees(); 
+    final allFees = await _feeService.getAllFees();
     studentFees = allFees;
     pendingFees = allFees.where((f) => f.status == "Pending").toList();
   } catch (e) {
@@ -59,6 +70,10 @@ class FeeController extends ChangeNotifier{
   Future<void> saveFees(FeeModel fee)async{
     try{
     await _feeService.saveFee(fee);
+    // Send notification
+    if (fee.status == "Pending") {
+        await _sendPendingFeeNotification(fee);
+    }
     await fetchFees(fee.studentId);
     }catch(e){
       errorMessage = e.toString();
@@ -132,6 +147,8 @@ class FeeController extends ChangeNotifier{
       await _feeService.saveFee(newFee);
 
       await fetchFees(studentId);
+      // Send Notification
+      await _sendPendingFeeNotification(newFee);
     }
   } catch (e) {
     errorMessage = "Error in ensureMonthlyFee: $e";
@@ -214,4 +231,56 @@ Future<void> fetchFeesForStudents(List<String> studentIds) async {
     }
   }
 
+
+
+  // OneSignal Notification
+    Future<void> _sendPendingFeeNotification(FeeModel fee) async {
+    try {
+      // final targetUserId = fee.studentId;
+      final response = await http.post(
+        Uri.parse("https://api.onesignal.com/notifications"),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Authorization": "Basic $_restApiKey",
+        },
+        body: jsonEncode({
+          "app_id": _appId,
+          "included_segments": ["All"],
+          // "include_external_user_ids": [targetUserId], 
+          "headings": {"en": "Pending Fee"},
+          "contents": {
+            "en":
+                "Your fee payment for ${fee.month} is pending. Fee Amount is ₹${fee.amount}"
+          },
+        }),
+      );
+      log("OneSignal response: ${response.body}");
+    } catch (e) {
+      log("Error in sending Notification: $e");
+    }
+  }
+
+  // For selected student
+  Future<void> sendPendingFeeNotificationToStudent(FeeModel fee, String studentId) async {
+    try {
+      final userId = await OneSignal.User.getOnesignalId();
+      final response = await http.post(
+        Uri.parse("https://api.onesignal.com/notifications"),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Authorization": "Basic $_restApiKey",
+        },
+        body: jsonEncode({
+          "app_id": _appId,
+          "include_player_ids": [userId],
+          "headings": {"en": "Pending Fee"},
+          "contents": {"en": "Your fee payment for ${fee.month} is pending. Fee Amount is ₹${fee.amount}"},
+        }),
+      );
+
+      log("OneSignal response: ${response.body}");
+    } catch (e) {
+      log("Error sending notification: $e");
+    }
+  }
 }

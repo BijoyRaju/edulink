@@ -5,6 +5,7 @@ import 'package:edu_link/view/login/login_screen.dart';
 import 'package:edu_link/widgets/common/common.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController {
@@ -64,6 +65,11 @@ class AuthController {
         await prefs.setBool("isLoggedIn", true);
         log(userId);
         log(userRole);
+        // One Signal Login
+        OneSignal.login(userId);
+
+        final isSubscribed = await OneSignal.User.pushSubscription.optedIn;
+        log("Is user subscribed to push? $isSubscribed");
 
         if (userRole != "admin" && adminId != null) {
         // Save adminId for teacher/student
@@ -124,6 +130,8 @@ class AuthController {
       if (context.mounted) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.clear();
+        // OneSignal Logout
+        OneSignal.logout();
         if(context.mounted){
         showSnackBarMessage(context, "Logged Out Successfully.");
         Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
