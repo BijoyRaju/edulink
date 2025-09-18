@@ -1,3 +1,4 @@
+import 'package:edu_link/controller/student_controller.dart';
 import 'package:edu_link/view/drawer/drawer.dart';
 import 'package:edu_link/view/home/admin_tabs/admin_overview.dart';
 import 'package:edu_link/view/home/admin_tabs/teacher_list_screen.dart';
@@ -7,9 +8,11 @@ import 'package:edu_link/view/home/student_tabs/student_dashboard.dart';
 import 'package:edu_link/view/home/teacher_tabs/teacher_dashboard.dart';
 import 'package:edu_link/view/home/teacher_tabs/teacher_student_tab.dart';
 import 'package:edu_link/widgets/common/common.dart';
+import 'package:edu_link/widgets/student/qr_popup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 
 class HomeScreen extends StatelessWidget {
@@ -42,9 +45,24 @@ String studentId = FirebaseAuth.instance.currentUser!.uid;
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        IconButton(onPressed: (){
-                          _scaffoldKey.currentState?.openDrawer();
-                        }, icon: Icon(Icons.menu_sharp,size: 40.sp,color: Colors.white)),
+                        Row(
+                          children: [
+                            IconButton(onPressed: (){
+                              _scaffoldKey.currentState?.openDrawer();
+                            }, icon: Icon(Icons.menu_sharp,size: 40.sp,color: Colors.white)),
+                            Spacer(),
+                            if(role == "student") IconButton(onPressed: (){
+                              final studentController = Provider.of<StudentController>(context,listen: false);
+                              final student = studentController.currentStudent;
+                              showDialog(
+                                context: context,
+                                builder: (_) => QrPopup(
+                                  studentId: student!.studentId,
+                                  studentName: student.name,
+                                ));
+                            }, icon: Icon(Icons.qr_code,size: 25.sp,color: Colors.white,))
+                          ],
+                        ),
                         SizedBox(height: 15.sp),
                         customText(text: "Welcome to Edu Link",fontSize: 24.sp,fontWeight: FontWeight.bold,color: Colors.white),
                         SizedBox(height: 3.h),

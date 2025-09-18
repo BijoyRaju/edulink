@@ -2,6 +2,7 @@ import 'package:edu_link/controller/attendance_controller.dart';
 import 'package:edu_link/controller/student_controller.dart';
 import 'package:edu_link/controller/teacher_controller.dart';
 import 'package:edu_link/model/attendance_model.dart';
+import 'package:edu_link/widgets/attendance/qr_scanner_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -42,6 +43,67 @@ class _AttendanceState extends State<Attendance> {
         title: const Text("Take Attendance"),
         backgroundColor: Color(0xFF254F43),
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(onPressed: ()async{
+             final scannedId = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const QrScannerPage()),
+    );
+
+    if (scannedId != null) {
+      final attendanceController = context.read<AttendanceController>();
+      final teacherController = context.read<TeacherController>();
+      final teacher = teacherController.currentTeacher;
+      final normalizedDate = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+      );
+
+      // Check if already marked
+      final existing = attendanceController.attendanceList.firstWhere(
+        (a) => a.studentId == scannedId &&
+               a.date.year == normalizedDate.year &&
+               a.date.month == normalizedDate.month &&
+               a.date.day == normalizedDate.day,
+        orElse: () => AttendanceModel(
+          attendanceId: "",
+          studentId: scannedId,
+          date: normalizedDate,
+          status: "Not Set",
+          markedBy: teacher?.teacherId ?? "Unknown",
+          method: "QR",
+        ),
+      );
+
+      if (existing.attendanceId.isEmpty) {
+        // New record
+        final AttendanceModel attendance = AttendanceModel(
+          attendanceId: DateTime.now().microsecondsSinceEpoch.toString(),
+          studentId: scannedId,
+          date: normalizedDate,
+          status: "Present",
+          markedBy: teacher?.teacherId ?? "Unknown Teacher",
+          method: "QR",
+        );
+
+        await attendanceController.markAttendance(attendance);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Attendance marked for $scannedId")),
+        );
+      } else {
+        // Already exists → update
+        await attendanceController.updateAttendance(
+          existing.attendanceId,
+          {"status": "Present"},
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Updated attendance for $scannedId")),
+        );
+      }
+      }
+          }, icon: Icon(Icons.qr_code_scanner))
+        ],
       ),
       body: Column(
         children: [

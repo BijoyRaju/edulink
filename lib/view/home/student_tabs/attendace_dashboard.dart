@@ -66,30 +66,33 @@ class _AttendanceDashboardState extends State<AttendanceDashboard> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 DropdownButton<String>(
-                  value: attendanceController.selectedYear,
-                  items: ["2023", "2024", "2025"].map((year) {
-                  return DropdownMenuItem(value: year, child: Text(year));
-                }).toList(),
+                    value: attendanceController.selectedYear,
+                    items: ["2023", "2024", "2025"].map((year) {
+                      return DropdownMenuItem(
+                        value: year,
+                        child: Text(year),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      final student = studentController.currentStudent;
+                      if (student != null && value != null) {
+                        attendanceController.updateYear(value, student.studentId); 
+                      }
+                    },
+                  ),
+                DropdownButton<String>(
+                  value: months.keys.contains(attendanceController.selectdMonth)
+                      ? attendanceController.selectdMonth
+                      : "1", 
+                  items: months.entries.map((entry) {
+                    return DropdownMenuItem(
+                      value: entry.key,
+                      child: Text(entry.value),
+                    );
+                  }).toList(),
                   onChanged: (value) {
                     final student = studentController.currentStudent;
-                    if(student != null && value != null){
-                      attendanceController.updateMonth(value, student.studentId);
-                    }
-                  }
-                ),
-                DropdownButton<String>(
-                  value: attendanceController.selectdMonth,
-                  items:  {"1": "January","2": "February", "3": "March","4": "April","5": "May","6": "June","7": "July",
-                  "8": "August","9": "September","10": "October","11": "November","12": "December",}.
-                  entries.map((entry) {
-                  return DropdownMenuItem(
-                    value: entry.key,
-                    child: Text(entry.value),
-                  );
-                }).toList(),
-                  onChanged: (value)  {
-                    final student = studentController.currentStudent;
-                    if(student != null && value != null){
+                    if (student != null && value != null) {
                       attendanceController.updateMonth(value, student.studentId);
                     }
                   },

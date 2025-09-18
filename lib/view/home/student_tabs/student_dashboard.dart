@@ -1,5 +1,4 @@
 import 'package:edu_link/controller/attendance_controller.dart';
-import 'package:edu_link/controller/fee_controller.dart';
 import 'package:edu_link/controller/student_controller.dart';
 import 'package:edu_link/widgets/home/home_widget.dart';
 import 'package:flutter/material.dart';

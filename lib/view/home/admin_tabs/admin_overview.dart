@@ -21,9 +21,10 @@ class _AdminOverviewState extends State<AdminOverview> {
 
     Future.microtask(() async {
       final studentController = Provider.of<StudentController>(context, listen: false);
-      final feeController = Provider.of<FeeController>(context, listen: false);
       final now = DateTime.now();
-
+      final feeController = Provider.of<FeeController>(context, listen: false);
+      feeController.fetchThisMonthRevenue();
+      feeController.loadRecentTransactions();
       for (var student in studentController.students) {
         await feeController.ensureMonthlyFee(student.studentId, now.year, now.month);
       }
@@ -34,9 +35,21 @@ class _AdminOverviewState extends State<AdminOverview> {
   Widget build(BuildContext context) {
     final teacherController = Provider.of<TeacherController>(context);
     final studentController = Provider.of<StudentController>(context);
+    final feeController = Provider.of<FeeController>(context);
 
     final totalTeacher = teacherController.teacher.length;
     final totalStudents = studentController.students.length;
+    final totalRevenue = feeController.monthlyRevenue.toString();
+
+    String getStudentName(String studentId) {
+    if(studentController.students.isEmpty){
+        return "No student found";
+      }
+    final student = studentController.students.firstWhere(
+      (s) => s.studentId == studentId,
+    );
+    return student.name ?? "Unknow Teacher";
+  }
 
     return Padding(
       padding: const EdgeInsets.all(20.0),
@@ -65,12 +78,12 @@ class _AdminOverviewState extends State<AdminOverview> {
                         "$totalTeacher"
                       ),
                       SizedBox(height: 10.h),
-                      homeScreenContainerTwo(
+                      homeScreenContainerTheree(
                         115.sp, 
                         150.sp, 
                         const Color(0xFF29725E), 
-                        "REVENUE", 
-                        "15000"
+                        "This month Revenue", 
+                        totalRevenue
                       ),
                     ],
                   ),
@@ -85,11 +98,44 @@ class _AdminOverviewState extends State<AdminOverview> {
                   color: Colors.grey,
                   decorationColor: Colors.grey
                 ),
-              )
+              ),
+              SizedBox(height: 10.h),
+              Builder(
+                builder: (_) {
+                  if (feeController.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (feeController.errorMessage.isNotEmpty) {
+                    return Center(
+                      child: Text(
+                        "Error: ${feeController.errorMessage}",
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    );
+                  }
+
+                  if (feeController.recentTransactions.isEmpty) {
+                    return const Text("No Recent Transaction");
+                  }
+
+                  return Column(
+                    children: feeController.recentTransactions.map((fee) {
+                      return recentTransactionCard(
+                        studentName: getStudentName(fee.studentId),
+                        paymentMethod: fee.paymentMethod ?? "N/A",
+                        amount: fee.amount,
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
             ],
           ),
         ],
       ),
     );
+    
   }
+    
 }
