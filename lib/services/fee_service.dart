@@ -35,7 +35,7 @@ class FeeService {
   // Get All Fees
    Future<List<FeeModel>> getAllFees() async {
     try{
-      final snapshot = await _firestore.collection("fees").get();
+      final snapshot = await _firestore.collection(_collection).get();
       return snapshot.docs.map((doc) => FeeModel.fromMap(doc.data())).toList();
     }catch(e){
       log("Error in fetching students fees: $e");
@@ -92,20 +92,29 @@ class FeeService {
 }
 
 // Revenue this Month
-  Future<double> getThisMonthRevenue() async {
+  Future<double> getThisMonthRevenue(List<String> studentIds) async {
     try {
       final now = DateTime.now();
       final startOfMonth = DateTime(now.year, now.month, 1);
       final startOfNextMonth = DateTime(now.year, now.month + 1, 1);
 
+      // Simplified query to avoid composite index requirement
       final query = await _firestore
             .collection(_collection)
+            .where("student_id", whereIn: studentIds)
             .where("status", isEqualTo: "Paid")
-            .where("paid_on", isGreaterThanOrEqualTo: Timestamp.fromDate(startOfMonth))
-            .where("paid_on", isLessThan: Timestamp.fromDate(startOfNextMonth))
-            .get();
+              .get();
 
-      final paidDocs = query.docs.where((doc) => doc["status"] == "Paid");
+      // Filter by date in application code to avoid composite index
+      final paidDocs = query.docs.where((doc) {
+        final data = doc.data();
+        final paidOn = data["paid_on"] as Timestamp?;
+        if (paidOn == null) return false;
+        
+        final paidDate = paidOn.toDate();
+        return paidDate.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+               paidDate.isBefore(startOfNextMonth);
+      });
 
       double total = 0;
       for (var doc in paidDocs) {
@@ -121,17 +130,34 @@ class FeeService {
   }
 
   // Recent Transaction
-  Future<List<FeeModel>> fetchRecentTransactions() async {
+  Future<List<FeeModel>> fetchRecentTransactions(List<String> studentIds) async {
     try {
+      // Simplified query to avoid composite index requirement
       final snapshot = await _firestore
           .collection(_collection)
+          .where("student_id", whereIn: studentIds)
           .where("status", isEqualTo: "Paid") 
-          .orderBy("paid_on", descending: true) 
-          .limit(5)
           .get();
 
-      return snapshot.docs.map((doc) => FeeModel.fromMap(doc.data())).toList();
+      // Sort and limit in application code to avoid composite index
+      final paidDocs = snapshot.docs.where((doc) {
+        final data = doc.data();
+        return data["paid_on"] != null; // Only include documents with paid_on
+      }).toList();
+
+      // Sort by paid_on in descending order
+      paidDocs.sort((a, b) {
+        final aDate = (a.data()["paid_on"] as Timestamp).toDate();
+        final bDate = (b.data()["paid_on"] as Timestamp).toDate();
+        return bDate.compareTo(aDate); // Descending order
+      });
+
+      // Take only the first 5
+      final limitedDocs = paidDocs.take(5).toList();
+
+      return limitedDocs.map((doc) => FeeModel.fromMap(doc.data())).toList();
     } catch (e) {
+      log("Error in recent transaction: $e");
       throw Exception("Error fetching recent transactions: $e");
     }
   }

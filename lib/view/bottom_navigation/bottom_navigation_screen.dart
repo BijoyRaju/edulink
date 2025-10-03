@@ -1,7 +1,7 @@
+import 'package:edu_link/view/profile/profile_screen.dart';
 import 'package:edu_link/view/announcement/announcement_screen.dart';
 import 'package:edu_link/view/chat/chat_screen.dart';
 import 'package:edu_link/view/home/home_screen.dart';
-import 'package:edu_link/view/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigationScreen extends StatefulWidget {

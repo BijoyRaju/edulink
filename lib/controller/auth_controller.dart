@@ -1,12 +1,16 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:edu_link/main.dart';
 import 'package:edu_link/services/auth_service.dart';
 import 'package:edu_link/view/bottom_navigation/bottom_navigation_screen.dart';
 import 'package:edu_link/view/login/login_screen.dart';
 import 'package:edu_link/widgets/common/common.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 class AuthController {
   final AuthService _authService = AuthService();
@@ -71,9 +75,17 @@ class AuthController {
         final isSubscribed = await OneSignal.User.pushSubscription.optedIn;
         log("Is user subscribed to push? $isSubscribed");
 
+        // 🔹 Save FCM token here
+        await saveUserDeviceToken(userId);
+
+         await connectUserToStreamChat(userId, result["name"] ?? "User", result["photoURL"]);
+
+
         if (userRole != "admin" && adminId != null) {
         // Save adminId for teacher/student
         await prefs.setString("adminId", adminId);
+
+
       }
         if(context.mounted){
         showSnackBarMessage(context, "Login Successful");
@@ -127,6 +139,8 @@ class AuthController {
   Future<void> logOutUser(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
+      // Disconnect from Stream Chat
+      await disconnectUserFromStreamChat();
       if (context.mounted) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.clear();
@@ -143,6 +157,20 @@ class AuthController {
       }
     }
   }
+
+  // FCM Token
+  Future<void> saveUserDeviceToken(String userId) async {
+  final fcm = FirebaseMessaging.instance;
+  final token = await fcm.getToken(); // Device FCM Token
+
+  if (token != null) {
+    // Save to Firestore
+    await FirebaseFirestore.instance.collection("users").doc(userId).update({
+      "fcmToken": token,
+    });
+  }
+}
+
 
     void dispose() {
       nameController.dispose();

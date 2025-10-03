@@ -33,7 +33,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
    void openCheckout() {
     var options = {
-      'key': 'rzp_test_RFOnd4V3QeEso4', 
+      'key': 'rzp_test_1DP5mmOlF5G5ag', // Replace with your actual Razorpay test key
       'amount': widget.fee.amount * 100,
       'name': 'EduLink Fees',
       'description': 'Fee for ${DateFormat('MMM yyyy').format(widget.fee.month!)}',

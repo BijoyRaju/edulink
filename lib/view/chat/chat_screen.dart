@@ -55,6 +55,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Chats')),
+      floatingActionButton: FloatingActionButton(onPressed: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context) => UsersListScreen(currentUserId: currentUser.id)));
+      },child: Icon(Icons.chat_bubble),),
       body: RefreshIndicator(
         onRefresh: _controller!.refresh,
         child: StreamChannelListView(
@@ -96,14 +99,3 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-
-// class ChatScreen extends StatelessWidget {
-//   const ChatScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Placeholder();
-//   }
-// }

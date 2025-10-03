@@ -9,6 +9,16 @@ Future<bool?> showUpdateDialog(BuildContext context, FeeModel fee) async {
 
   String selectedStatus = fee.status;
   String? selectedMethod = fee.paymentMethod;
+  
+  // List of valid payment methods
+  const List<String> validPaymentMethods = [
+    "Cash", "UPI", "Card", "Razorpay", "Paytm", "Google Pay", "PhonePe", "Bank Transfer", "Cheque"
+  ];
+  
+  // If the current payment method is not in the valid list, set it to null
+  if (selectedMethod != null && !validPaymentMethods.contains(selectedMethod)) {
+    selectedMethod = null;
+  }
 
   return showDialog<bool>(
     context: context,
@@ -40,13 +50,19 @@ Future<bool?> showUpdateDialog(BuildContext context, FeeModel fee) async {
                   DropdownButtonFormField<String>(
                     value: selectedMethod,
                     items: const [
+                      DropdownMenuItem(value: null, child: Text("Select Method")),
                       DropdownMenuItem(value: "Cash", child: Text("Cash")),
                       DropdownMenuItem(value: "UPI", child: Text("UPI")),
                       DropdownMenuItem(value: "Card", child: Text("Card")),
+                      DropdownMenuItem(value: "Razorpay", child: Text("Razorpay")),
+                      DropdownMenuItem(value: "Paytm", child: Text("Paytm")),
+                      DropdownMenuItem(value: "Google Pay", child: Text("Google Pay")),
+                      DropdownMenuItem(value: "PhonePe", child: Text("PhonePe")),
                       DropdownMenuItem(
                           value: "Bank Transfer", child: Text("Bank Transfer")),
+                      DropdownMenuItem(value: "Cheque", child: Text("Cheque")),
                     ],
-                    onChanged: (val) => setState(() => selectedMethod = val!),
+                    onChanged: (val) => setState(() => selectedMethod = val),
                     decoration: const InputDecoration(
                       labelText: "Payment Method",
                       border: OutlineInputBorder(),
@@ -74,6 +90,14 @@ Future<bool?> showUpdateDialog(BuildContext context, FeeModel fee) async {
           ),
           ElevatedButton(
             onPressed: () async {
+              // Validation: If status is "Paid", payment method should be selected
+              if (selectedStatus == "Paid" && (selectedMethod == null || selectedMethod!.isEmpty)) {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  const SnackBar(content: Text("Please select a payment method for paid status")),
+                );
+                return;
+              }
+
               final updatedFee = FeeModel(
                 feeId: fee.feeId,
                 studentId: fee.studentId,
@@ -85,9 +109,19 @@ Future<bool?> showUpdateDialog(BuildContext context, FeeModel fee) async {
                 month: fee.month,
               );
 
-              await Provider.of<FeeController>(ctx, listen: false)
-                  .updateFee(updatedFee);
-               Navigator.of(context).pop(true);   
+              try {
+                await Provider.of<FeeController>(ctx, listen: false)
+                    .updateFee(updatedFee);
+                if (ctx.mounted) {
+                  Navigator.of(ctx).pop(true);
+                }
+              } catch (e) {
+                if (ctx.mounted) {
+                  ScaffoldMessenger.of(ctx).showSnackBar(
+                    SnackBar(content: Text("Error updating payment: $e")),
+                  );
+                }
+              }
             },
             child: const Text("Save"),
           ),

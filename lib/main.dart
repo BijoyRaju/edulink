@@ -20,6 +20,41 @@ import 'package:permission_handler/permission_handler.dart';
 
 
 final mediaStorePlugin = MediaStore();
+StreamChatClient? globalStreamClient;
+
+// Global function to connect user to Stream Chat
+Future<void> connectUserToStreamChat(String userId, String userName, String? userImage) async {
+  if (globalStreamClient != null) {
+    try {
+      await globalStreamClient!.connectUser(
+        User(
+          id: userId,
+          extraData: {
+            'name': userName,
+            'image': userImage ?? 'https://getstream.io/random_png/?id=$userId',
+          },
+        ),
+        globalStreamClient!.devToken(userId).rawValue,
+      );
+      print('Successfully connected to Stream Chat for user: $userId');
+    } catch (e) {
+      print('Error connecting to Stream Chat: $e');
+    }
+  }
+}
+
+// Global function to disconnect user from Stream Chat
+Future<void> disconnectUserFromStreamChat() async {
+  if (globalStreamClient != null) {
+    try {
+      await globalStreamClient!.disconnectUser();
+      print('Successfully disconnected from Stream Chat');
+    } catch (e) {
+      print('Error disconnecting from Stream Chat: $e');
+    }
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -30,6 +65,9 @@ void main() async {
     'az437hxams6a',
     logLevel: Level.INFO,
   );
+  
+  // Set global client for use in auth controller
+  globalStreamClient = client;
 
   runApp(MyApp(client: client));
 
@@ -40,21 +78,25 @@ void main() async {
     OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
     OneSignal.Notifications.requestPermission(true);
 
+    // Check if user is already logged in and connect to Stream Chat
     final firebaseUser = fb_auth.FirebaseAuth.instance.currentUser;
-
-
     if (firebaseUser != null) {
-    await client.connectUser(
-      User(
-        id: firebaseUser.uid,
-        extraData: {
-          'name': firebaseUser.displayName ?? 'Guest',
-          'image': 'https://getstream.io/random_png/?id=${firebaseUser.uid}',
-        },
-      ),
-      client.devToken(firebaseUser.uid).rawValue, 
-    );
-  }
+      try {
+        await client.connectUser(
+          User(
+            id: firebaseUser.uid,
+            extraData: {
+              'name': firebaseUser.displayName ?? 'Guest',
+              'image': 'https://getstream.io/random_png/?id=${firebaseUser.uid}',
+            },
+          ),
+          client.devToken(firebaseUser.uid).rawValue, 
+        );
+        print('Stream Chat connected for existing user: ${firebaseUser.uid}');
+      } catch (e) {
+        print('Error connecting to Stream Chat: $e');
+      }
+    }
 
   // Intialize MediaStore
   if (Platform.isAndroid) {

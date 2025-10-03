@@ -34,7 +34,7 @@ class _FeePaymentAdminScreenState extends State<FeePaymentAdminScreen> {
 
   String getStudentName(String studentId) {
     if(studentController.students.isEmpty){
-      return "No teacher found";
+      return "No student found";
     }
   final student = studentController.students.firstWhere(
     (t) => t.studentId  == studentId,

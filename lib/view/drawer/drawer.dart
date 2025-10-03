@@ -1,5 +1,6 @@
 import 'package:edu_link/controller/auth_controller.dart';
 import 'package:edu_link/view/attendance/attendance.dart';
+import 'package:edu_link/view/exam_evaluator/ai_exam_input_page.dart';
 import 'package:edu_link/view/fee_payment/admin/fee_payment_admin_screen.dart';
 import 'package:edu_link/view/fee_payment/student/fee_payment_student_screen.dart';
 import 'package:edu_link/view/fee_payment/teacher/fee_payment_teacher_screen.dart';
@@ -66,6 +67,14 @@ Widget customDrawer(BuildContext context,String role,String studentId) {
           onTap: () {
             Navigator.pop(context);
             // Navigate to Profile Screen
+          },
+        ),
+        Divider(),
+        ListTile(
+          leading: const Icon(Icons.find_in_page_rounded),
+          title: const Text('AI Exam Evaluvator'),
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => AIExamInputPage()));
           },
         ),
         Divider(),

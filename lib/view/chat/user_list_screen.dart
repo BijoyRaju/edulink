@@ -42,17 +42,7 @@ class UsersListScreen extends StatelessWidget {
                   try {
                     final otherUserId = user['uid'];
 
-                    // Make sure the other user exists in Stream
-                    await client.updateUser(
-                      User(
-                        id: otherUserId,
-                        extraData: {
-                          'name': user['name'] ?? "User",
-                          'image': user['photoURL'] ?? "",
-                        },
-                      ),
-                    );
-
+                    // ✅ No updateUser here
                     final channel = client.channel(
                       'messaging',
                       extraData: {
