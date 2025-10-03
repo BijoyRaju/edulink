@@ -4,6 +4,7 @@ class AdminModel {
   String email;
   String phoneNo;
   String schoolName;
+  
 
   AdminModel({
     required this.adminId,
